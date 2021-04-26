@@ -1,7 +1,7 @@
 const express = require('express');
 let router = express.Router();
-const tutorialController = require('../controllers/events-controller.js');
-// middleware for all routes related with tutorials
+const eventsController = require('../controllers/events-controller.js');
+// middleware for all routes related with events
 router.use((req, res, next) => {
     const start = Date.now();
     res.on("finish", () => { //finish event is emitted once the response is sent to the client
@@ -10,21 +10,12 @@ router.use((req, res, next) => {
     });
     next()
 })
-/* router.get('/', tutorialController.findAll);
 
-router.get('/published', tutorialController.published);
-
-router.get('/:tutorialID', tutorialController.findOne);
-
-router.delete('/:tutorialID', tutorialController.delete);
-
-router.post('/', tutorialController.create);
-
-router.put('/:tutorialID', tutorialController.update); */
+router.route('/')
+    .get(eventsController.findAll)
 
 
-
-//send a predefined error message for invalid routes on TUTORIALS
+//send a predefined error message for invalid routes on EVENTS
 router.all('*', function (req, res) {
     res.status(404).json({ message: 'EVENTS: what???' });
 })

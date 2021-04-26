@@ -1,16 +1,30 @@
-const mysql = require('mysql');
-const dbConfig = require('../config/db-config.js'); // gets DB credentials
+const dbConfig = require('../config/db-config.js');
+const { Sequelize, DataTypes } = require('sequelize');
 
-const connection = mysql.createConnection({
+const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.HOST,
-    user: dbConfig.USER,
-    password: dbConfig.PASSWORD,
-    database: dbConfig.DB
+    dialect: dbConfig.dialect
+    ,
+    pool: {
+        max: dbConfig.pool.max,
+        min: dbConfig.pool.min,
+        acquire: dbConfig.pool.acquire,
+        idle: dbConfig.pool.idle
+    }
 });
 
-connection.connect(function (err) {
-    if (err) throw err;
-    console.log(`Database ${dbConfig.DB} @ ${dbConfig.HOST} is connected successfully !`);
-});
+sequelize.authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
 
-module.exports = connection;
+const db = {};
+db.sequelize = sequelize;
+
+//export TUTORIAL model
+db.events = require("./events-model.js")(sequelize, DataTypes);
+
+module.exports = db;
