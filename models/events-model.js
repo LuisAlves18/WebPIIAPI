@@ -1,5 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
     const Events = sequelize.define("events", {
+        id_event_type: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: { notNull: {msg: "Event type must be defined"}}
+        },
         name: {
             type: DataTypes.STRING,
             allowNull: false,

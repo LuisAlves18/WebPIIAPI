@@ -1,6 +1,7 @@
 const express = require('express');
 let router = express.Router();
 const eventsController = require('../controllers/events-controller.js');
+const { events } = require('../models/db.js');
 // middleware for all routes related with events
 router.use((req, res, next) => {
     const start = Date.now();
@@ -13,7 +14,14 @@ router.use((req, res, next) => {
 
 router.route('/')
     .get(eventsController.findAll)
+    .post(eventsController.createEvent)
 
+router.route('/closed')
+    .get(eventsController.findNotClosed)
+
+router.route('/:eventID')
+    .delete(eventsController.deleteEvent)
+    .get(eventsController.findOneEvent)
 
 //send a predefined error message for invalid routes on EVENTS
 router.all('*', function (req, res) {
