@@ -88,7 +88,7 @@ exports.findNotClosed = (req, res) => {
         })
         .catch(err => {
             res.status(500).json({
-                message: `Error retrieving Tutorial with id ${req.params.tutorialID}.`
+                message: `Error retrieving Event with id ${req.params.eventID}.`
             });
         });
 };
