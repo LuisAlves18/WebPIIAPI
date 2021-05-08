@@ -4,11 +4,65 @@ const { Op } = require('sequelize');
 
 // Display list of all events
 exports.findAll = (req, res) => {
-    let {id_event_type } = req.query;
-    const condition = id_event_type ? { id_event_type: { [Op.like]: `%${id_event_type}%` } } : null;
+    let {id_event_type, name, price } = req.query;
+
+    let condition = null;
+
+    if (name) {
+        if (condition == null) {
+            condition = {
+                name: { [Op.like]: `%${name}%` }
+            }
+        } else {
+            condition['name'] = {[Op.like]: `%${name}%`} ;
+        }
+    }
+    
+    if (id_event_type) {
+        if (condition == null) {
+            condition = {
+                id_event_type: id_event_type
+            }
+        } else {
+            condition["id_event_type"] = id_event_type;
+        }
+        
+    }
+
+    if (price) {
+        if (condition == null) {
+            if (price == 0) {
+                condition = {
+                    price: price
+                }
+            } else if (price == 1) {
+                condition = {
+                    price: {[Op.gte]: price}
+                }
+            }
+            
+        } else {
+            if (price == 0) {
+                condition['price'] = price;
+            } else if (price == 1) {
+                condition['price'] = 
+                     {[Op.gte]: price};
+            }
+           
+        }
+    }
+    
     Events.findAll({ where: condition})
         .then(data => {
-            res.status(200).json(data);
+            //console.log('data', data.length)
+            if (data.length == 0) {
+                res.status(404).json({
+                    message: "Could not find events for that search!"
+                });
+            } else {
+                res.status(200).json(data);
+            }
+           
         })
         .catch(err => {
             res.status(500).json({
@@ -98,6 +152,7 @@ exports.findOneEvent = (req, res) => {
     // obtains only a single entry from the table, using the provided primary key
     Events.findByPk(req.params.eventID)
         .then(data => {
+            console.log('data',data)
             if (data === null)
                 res.status(404).json({
                     message: `Not found event with id ${req.params.eventID}.`

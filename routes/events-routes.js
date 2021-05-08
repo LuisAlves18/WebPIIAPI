@@ -19,7 +19,7 @@ router.route('/')
 router.route('/closed')
     .get(eventsController.findNotClosed)
 
-router.route('/:eventID')
+router.route('/:eventID([0-9]*$)')
     .delete(eventsController.deleteEvent)
     .get(eventsController.findOneEvent)
 
