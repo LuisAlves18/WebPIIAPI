@@ -22,6 +22,7 @@ router.route('/closed')
 router.route('/:eventID([0-9]*$)')
     .delete(eventsController.deleteEvent)
     .get(eventsController.findOneEvent)
+    .put(eventsController.updateOneEvent)
 
 //send a predefined error message for invalid routes on EVENTS
 router.all('*', function (req, res) {

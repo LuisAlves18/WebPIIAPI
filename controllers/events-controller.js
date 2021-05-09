@@ -166,3 +166,58 @@ exports.findOneEvent = (req, res) => {
             });
         });
 };
+
+// Update One Event
+exports.updateOneEvent = (req, res) => {
+    // validate request body data
+    if (!req.body) {
+        res.status(400).json({ message: "Request body can not be empty!" });
+        return;
+    } else if (!req.body.id_event_type) {
+        res.status(400).json({ message: "Event Type must be defined." });
+        return;
+    } else if (!req.body.name) {
+        res.status(400).json({ message: "Event name can not be empty!" });
+        return;
+    } else if (!req.body.description) {
+        res.status(400).json({ message: "Event description can not be empty!" });
+        return;
+    } else if (!req.body.photo) {
+        res.status(400).json({ message: "Event photo can not be empty!" });
+        return;
+    } else if (!req.body.date_time_event) {
+        res.status(400).json({ message: "Event date can not be null!" });
+        return;
+    } else if (!req.body.date_limit) {
+        res.status(400).json({ message: "Event date limit can not be null!" });
+        return;
+    }
+    Events.findByPk(req.params.eventID)
+        .then(event => {
+            // no data returned means there is no event in DB with that given ID 
+            if (event === null)
+                res.status(404).json({
+                    message: `Not found Event with id ${req.params.eventID}.`
+                });
+            else {
+                Events.update(req.body, { where: { id: req.params.eventID } })
+                    .then(num => {
+                        // check if one comment was updated (returns 0 if no data was updated)
+                        if (num == 1) {
+                            res.status(200).json({
+                                message: `Event id=${req.params.eventID} was updated successfully.`
+                            });
+                        } else {
+                            res.status(200).json({
+                                message: `No updates were made on Event id=${req.params.eventID}.`
+                            });
+                        }
+                    })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                message: `Error updating Event with id=${req.params.eventID}.`
+            });
+        });
+};
