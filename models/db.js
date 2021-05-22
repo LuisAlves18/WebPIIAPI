@@ -26,5 +26,10 @@ db.sequelize = sequelize;
 
 //export TUTORIAL model
 db.events = require("./events-model.js")(sequelize, DataTypes);
+db.events_type = require("./events-type-model.js")(sequelize, DataTypes);
+
+
+/* db.events_type.hasMany(db.events); 
+db.events.belongsTo(db.events_type); */
 
 module.exports = db;

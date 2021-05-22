@@ -16,7 +16,7 @@ router.route('/')
     .get(eventsController.findAll)
     .post(eventsController.createEvent)
 
-router.route('/closed')
+router.route('/notClosed')
     .get(eventsController.findNotClosed)
 
 router.route('/:eventID([0-9]*$)')
