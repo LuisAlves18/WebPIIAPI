@@ -14,6 +14,6 @@ app.get('/', function(req, res) {
 app.use('/events', require('./routes/events-routes.js'))
 // handle invalid routes
 app.get('*', function(req, res) {
-    res.status(404).json({ message: 'WHAT???' });
+    res.status(404).json({ message: 'WHAT????' });
 })
 app.listen(port, host, () => console.log(`App listening at http://${host}:${port}/`));
