@@ -27,6 +27,19 @@ db.sequelize = sequelize;
 //export TUTORIAL model
 db.events = require("./events-model.js")(sequelize, DataTypes);
 db.events_type = require("./events-type-model.js")(sequelize, DataTypes);
+db.offers = require('./offers-model.js')(sequelize, DataTypes);
+db.offers_type = require('./offers-type-model.js')(sequelize, DataTypes);
+db.companies = require('./companies-model.js')(sequelize, DataTypes);
+db.areas = require('./areas-model.js')(sequelize, DataTypes);
+
+db.offers_type.hasMany(db.offers);
+db.offers.belongsTo(db.offers_type);
+
+db.areas.hasMany(db.offers);
+db.offers.belongsTo(db.areas);
+
+db.companies.hasMany(db.offers);
+db.offers.belongsTo(db.companies);
 
 
 /* db.events_type.hasMany(db.events); 

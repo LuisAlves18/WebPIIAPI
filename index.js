@@ -11,7 +11,8 @@ app.get('/', function(req, res) {
     res.status(200).json({ message: 'home -- alumni api' });
 });
 // routing middleware for resource TUTORIALS
-app.use('/events', require('./routes/events-routes.js'))
+app.use('/events', require('./routes/events-routes.js'));
+app.use('/offers', require('./routes/offers-routes.js'));
 // handle invalid routes
 app.get('*', function(req, res) {
     res.status(404).json({ message: 'WHAT????' });
