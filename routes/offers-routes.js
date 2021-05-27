@@ -18,7 +18,8 @@ router.route('/')
 
 router.route('/:offerID([0-9]*$)')
     .get(offersController.findOne)
-    
+    .put(offersController.updateOne)
+    .delete(offersController.deleteOne)
     
 
 
