@@ -31,13 +31,41 @@ db.offers = require('./offers-model.js')(sequelize, DataTypes);
 db.offers_type = require('./offers-type-model.js')(sequelize, DataTypes);
 db.companies = require('./companies-model.js')(sequelize, DataTypes);
 db.areas = require('./areas-model.js')(sequelize, DataTypes);
+db.users = require('./users-model.js')(sequelize, DataTypes);
+db.courses = require('./courses-model.js')(sequelize, DataTypes);
+db.users_type = require('./users-type-model.js')(sequelize, DataTypes);
+db.users_status = require('./users-status-model.js')(sequelize, DataTypes);
 
+
+
+
+//relationships
+
+//relação entre user e user type
+db.users_type.hasMany(db.users);
+db.users.belongsTo(db.users_type);
+
+//relação entre user e user status
+db.users_status.hasMany(db.users);
+db.users.belongsTo(db.users_status);
+
+//relação entre user e course
+db.courses.hasMany(db.users);
+db.users.belongsTo(db.courses);
+
+//relação entre user e area
+db.areas.hasMany(db.users);
+db.users.belongsTo(db.areas);
+
+//relação entre offer e type offer
 db.offers_type.hasMany(db.offers);
 db.offers.belongsTo(db.offers_type);
 
+//relação entre offer e area
 db.areas.hasMany(db.offers);
 db.offers.belongsTo(db.areas);
 
+//relação entre offer e companie
 db.companies.hasMany(db.offers);
 db.offers.belongsTo(db.companies);
 

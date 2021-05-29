@@ -1,6 +1,9 @@
 const db = require("../models/db.js");
-const Offers = db.offers;
-const Companies = db.companies;
+const Users = db.users;
+const Users_status = db.users_status;
+const Users_type = db.users_type;
+const Areas = db.areas;
+const Courses = db.courses;
 const { Op } = require('sequelize');
 
 // Todas as ofertas listadas
