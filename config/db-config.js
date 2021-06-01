@@ -16,5 +16,4 @@ const config = {
         idle: 10000    //maximum time, in milliseconds, that a connection can be idle before being released
     }
 };
-
 module.exports = config;
