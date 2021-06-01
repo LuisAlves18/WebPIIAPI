@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Users_Type = sequelize.define("type_user", {
+    const Roles = sequelize.define("role", {
         description: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -8,5 +8,5 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         timestamps: false
     });
-    return Users_Type;
+    return Roles;
 };

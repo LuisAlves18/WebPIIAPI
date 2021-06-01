@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Users_status = sequelize.define("status_user", {
+    const Status = sequelize.define("status", {
         description: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -8,5 +8,5 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         timestamps: false
     });
-    return Users_status;
+    return Status;
 };
