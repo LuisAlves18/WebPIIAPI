@@ -1,6 +1,7 @@
 const express = require('express');
 let router = express.Router();
 const usersController = require('../controllers/users-controller.js');
+const authController = require('../controllers/auth-controller.js');
 const { users } = require('../models/db.js');
 // middleware for all routes related with offers
 router.use((req, res, next) => {
@@ -12,8 +13,13 @@ router.use((req, res, next) => {
     next()
 })
 
-/* router.route('/')
-    .get(offersController.findAll) */
+router.route('/')
+    .get(authController.verifyToken,authController.isAdmin,usersController.getAllUsers)
+
+router.route('/:userID')
+    .put(authController.verifyToken,authController.isAdminOrLoggedUser,usersController.updateUser)
+    .get(authController.verifyToken, authController.isAdminOrLoggedUser, usersController.getOneUser)
+    .delete(authController.verifyToken, authController.isAdmin, usersController.removeUser)
 
 
 

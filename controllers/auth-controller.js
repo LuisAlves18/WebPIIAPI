@@ -63,8 +63,8 @@ exports.signup = async (req, res) => {
             linkedIn: '',
             photo: '',
             points: 0,
-            roleId: 2,
-            statusId: 3, //estado pendente aguarda confirmação de admin
+            roleId: 1,
+            statusId: 1, //estado pendente aguarda confirmação de admin
             courseId: req.body.courseId,
             areaId: req.body.areaId
         });
@@ -109,6 +109,19 @@ exports.signin = async (req, res) => {
             });
         } */
 
+        /* let status = await user.getStatus(Status)
+        console.log(status); */
+
+        if (user.statusId == 2) {
+            return res.status(401).json({
+                accessToken: null, message: "Oops, your account is blocked!"
+            });
+        } else if (user.statusId == 3) {
+            return res.status(401).json({
+                accessToken: null, message: "Oops, your account was not acepted yet!"
+            });
+        }
+
         const token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 86400 }); //24h expira
 
         let role = await Roles.findByPk(user.roleId)
@@ -122,7 +135,7 @@ exports.signin = async (req, res) => {
     }
 }
 
-/* exports.verifyToken = (req, res, next) => {
+exports.verifyToken = (req, res, next) => {
     let token = req.headers['x-access-token'];
 
     if (!token) {
@@ -136,31 +149,32 @@ exports.signin = async (req, res) => {
             return res.status(401).send({ message: "Unauthorized!" });
         }
         req.loggedUserId = decoded.id;
+        console.log(decoded.id);
         next();
 
     })
 
-} */
+}
 
-/* exports.isAdmin = async (req, res, next) => {
+exports.isAdmin = async (req, res, next) => {
     let user = await User.findByPk(req.loggedUserId);
     let role = await user.getRole();
-
-    if (role.name != 'admin') {
+    req.loggedUserRole = role.description;
+    if (role.description != 'admin') {
         return res.status(403).send({ message: "Require admin role!" })
 
     }
     next();
-}; */
+};
 
-/* exports.isAdminOrLoggedUser = async (req, res, next) => {
+exports.isAdminOrLoggedUser = async (req, res, next) => {
     let user = await User.findByPk(req.loggedUserId);
     let role = await user.getRole();
-
-    if (role.name != 'admin' && user.id != req.params.userID) {
+    req.loggedUserRole = role.description;
+    if (role.description != 'admin' && user.id != req.params.userID) {
         return res.status(403).send({ message: "Require admin role" })
     }
     next();
 
 
-} */
+}
