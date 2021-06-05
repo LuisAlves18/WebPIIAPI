@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const config = require('../config/auth-config.js');
 const db = require('../models/db.js');
 const User = db.users;
+const Events = db.events;
+const Enrollments = db.enrollments;
 const Role = db.roles;
 
 exports.getAllUsers = async (req, res) => {
@@ -108,16 +110,34 @@ exports.updateUser = async (req, res) => {
 
 exports.getOneUser = async (req, res) => {
     try {
-        let user = await User.findByPk(req.params.userID);
 
-        if (user == null) {
-            res.status(404).json({
-                message: `User with id = ${req.params.userID} not found.`
-            });
-            return;
+        if (req.params.userID == req.loggedUserId) {
+            let user = await User.findByPk(req.params.userID, {include: {model: Enrollments, include : {model: Events}}});
+
+            if (user == null) {
+                res.status(404).json({
+                    message: `User with id = ${req.params.userID} not found.`
+                });
+                return;
+            }
+
+            return res.status(200).json(user);
+
         } else {
+            let user = await User.findByPk(req.params.userID);
+
+            if (user == null) {
+                res.status(404).json({
+                    message: `User with id = ${req.params.userID} not found.`
+                });
+                return;
+            }
+
             return res.status(200).json(user);
         }
+
+
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

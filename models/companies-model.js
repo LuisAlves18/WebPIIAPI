@@ -40,7 +40,8 @@ module.exports = (sequelize, DataTypes) => {
             }
         }
     }, {
-        timestamps: false
+        timestamps: false,
+        tableName: 'companies'
     });
     return Companies;
 };

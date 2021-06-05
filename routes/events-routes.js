@@ -20,6 +20,8 @@ router.route('/')
 router.route('/:eventID/enrollments')
     .post(authController.verifyToken, authController.isLoggedUser, eventsController.enrollUser)
     .get(authController.verifyToken, authController.isAdmin, eventsController.getEventEnrollments)
+    .delete(authController.verifyToken, authController.isLoggedUser, eventsController.cancelEnrollment)
+    .put(authController.verifyToken, authController.isLoggedUser, eventsController.payEnrollment)
 
 router.route('/:eventID([0-9]*$)')
     .delete(eventsController.deleteEvent)

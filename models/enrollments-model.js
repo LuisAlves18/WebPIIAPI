@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
             validate: { notNull: {msg: "Enrolled can not be empty"}}
         }
     }, {
-        timestamps: false
+        timestamps: false,
+        tableName: 'enrollments'
     });
     return Enrollments;
 };

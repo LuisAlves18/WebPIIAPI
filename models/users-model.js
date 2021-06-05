@@ -46,7 +46,8 @@ module.exports = (sequelize, DataTypes) => {
             validate: { notNull: {msg: "Points cant be null"}}
         }
     }, {
-        timestamps: false
+        timestamps: false,
+        tableName: 'users'
     });
     return Users;
 };

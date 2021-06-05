@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
             validate: { notNull: {msg: "Description can not be empty"}}
         }
     }, {
-        timestamps: false
+        timestamps: false,
+        tableName: 'events_type'
     });
     return Events_Type;
 };

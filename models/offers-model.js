@@ -31,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
             validate: { notNull: {msg: "You must put a duration for the offer."}}
         }
     }, {
-        timestamps: false
+        timestamps: false,
+        tableName: 'offers'
     });
     return Offers;
 };
