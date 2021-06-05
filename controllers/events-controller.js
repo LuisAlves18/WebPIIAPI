@@ -1,5 +1,7 @@
 const db = require("../models/db.js");
 const Events = db.events;
+const Users = db.users;
+const Enrollments = db.enrollments;
 const { Op } = require('sequelize');
 
 // Display list of all events
@@ -251,19 +253,6 @@ exports.deleteEvent = async (req, res) => {
         });*/
 };
 
-// List all not closed events
-/*exports.findNotClosed = (req, res) => {
-    Events.findAll({ where : { closed : false}})
-        .then(data => {
-            res.status(200).json(data);
-        })
-        .catch(err => {
-            res.status(500).json({
-                message: `Error retrieving Event with id ${req.params.eventID}.`
-            });
-        });
-};*/
-
 // List just one event
 exports.findOneEvent = async (req, res) => {
     // obtains only a single entry from the table, using the provided primary key
@@ -396,3 +385,113 @@ exports.updateOneEvent = async (req, res) => {
         });
         */
 };
+
+exports.getEventEnrollments = async (req, res) => {
+    try {
+        let event = await Events.findByPk(req.params.eventID);
+
+        if (event == null) {
+            res.status(404).json({
+                message: `Event id ${req.params.eventID} not found!`
+            });
+            return;
+        }
+
+        let eventEnrollments = await Enrollments.findAll({where: {eventId: req.params.eventID},include: [{ model: Users}, {model: Events}] });
+
+        if (eventEnrollments == null) {
+            res.status(404).json({
+                message: `Event id ${req.params.eventID} doesn't have any enrollments!`
+            });
+            return;
+        }
+
+        let enrollment_status = '';
+        if (eventEnrollments.enrolled == true) {
+            enrollment_status = 'Inscrito'
+        } else {
+            enrollment_status = 'Pendente'
+        }
+
+        return res.status(200).json(eventEnrollments);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || `Error retrieving all enrollments for event with id ${req.params.eventID}.`
+        });
+    }
+}
+
+
+exports.enrollUser = async (req, res) => {
+    try {
+
+        /* if (!req.body) {
+            res.status(400).json({ message: "Request body can not be empty!" });
+            return;
+        } else if (!req.body.enrolled) {
+            res.status(400).json({ message: "Enrolled status must be defined." });
+            return;
+        }  */
+
+
+
+        /* console.log('logged',req.loggedUserId); */
+        let user = await Users.findByPk(req.loggedUserId);
+
+        if (user == null) {
+            res.status(404).json({
+                message: 'User not found!'
+            });
+            return;
+        }
+
+        let event = await Events.findByPk(req.params.eventID);
+
+        if (event == null) {
+            res.status(404).json({
+                message: 'Event not found!'
+            });
+            return;
+        }
+
+        let enrollment = await Enrollments.findOne({where: {eventId: req.params.eventID, userId: req.loggedUserId}});
+
+        if (enrollment != null) {
+            res.status(400).json({
+                message: `User with id ${req.loggedUserId} already enrolled to event with id ${req.params.eventID}`
+            });
+            return;
+        } else {
+
+            if (event.price == 0) {
+                let enroll = await Enrollments.create({
+                    userId: req.loggedUserId,
+                    eventId: req.params.eventID,
+                    enrolled: true
+                });
+
+                res.status(201).json({
+                    message: `User with id ${req.loggedUserId} enrolled sucessfully to event with id ${req.params.eventID}`
+                });
+                return;
+            } else {
+                let enroll = await Enrollments.create({
+                    userId: req.loggedUserId,
+                    eventId: req.params.eventID,
+                    enrolled: false
+                });
+
+                res.status(201).json({
+                    message: `Waiting for payment for event with id ${req.params.eventID} to enroll user with id ${req.loggedUserId}`
+                });
+                return;
+            }
+
+            
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || `Error enrolling user to event with id ${req.params.eventID}.`
+        });
+    }
+}

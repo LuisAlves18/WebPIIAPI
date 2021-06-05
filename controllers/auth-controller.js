@@ -63,8 +63,8 @@ exports.signup = async (req, res) => {
             linkedIn: '',
             photo: '',
             points: 0,
-            roleId: 1,
-            statusId: 1, //estado pendente aguarda confirmação de admin
+            roleId: 2,
+            statusId: 3, //estado pendente aguarda confirmação de admin
             courseId: req.body.courseId,
             areaId: req.body.areaId
         });
@@ -97,7 +97,7 @@ exports.signin = async (req, res) => {
             });
         }
 
-        /* let status = await Status.findByPk(user.statusId);
+        let status = await Status.findByPk(user.statusId);
 
         if (status.description == 'blocked') {
             return res.status(401).json({
@@ -107,12 +107,12 @@ exports.signin = async (req, res) => {
             return res.status(401).json({
                 accessToken: null, message: "Oops, your account was not acepted yet!"
             });
-        } */
+        }
 
         /* let status = await user.getStatus(Status)
         console.log(status); */
 
-        if (user.statusId == 2) {
+        /* if (user.statusId == 2) {
             return res.status(401).json({
                 accessToken: null, message: "Oops, your account is blocked!"
             });
@@ -120,7 +120,7 @@ exports.signin = async (req, res) => {
             return res.status(401).json({
                 accessToken: null, message: "Oops, your account was not acepted yet!"
             });
-        }
+        } */
 
         const token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 86400 }); //24h expira
 
@@ -173,6 +173,18 @@ exports.isAdminOrLoggedUser = async (req, res, next) => {
     req.loggedUserRole = role.description;
     if (role.description != 'admin' && user.id != req.params.userID) {
         return res.status(403).send({ message: "Require admin role" })
+    }
+    next();
+
+
+}
+
+exports.isLoggedUser = async (req, res, next) => {
+    let user = await User.findByPk(req.loggedUserId);
+    let role = await user.getRole();
+    req.loggedUserRole = role.description;
+    if (role.description == 'admin') {
+        return res.status(403).send({ message: "This is a user action!" })
     }
     next();
 

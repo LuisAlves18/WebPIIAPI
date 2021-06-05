@@ -1,6 +1,8 @@
 const db = require("../models/db.js");
 const Offers = db.offers;
 const Companies = db.companies;
+const Offers_Type = db.offers_type;
+
 const { Op } = require('sequelize');
 
 // Todas as ofertas listadas
@@ -75,22 +77,22 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
     try {
         //procurar uma oferta atraves do id enviado como parametro
-        let offer = await Offers.findByPk(req.params.offerID, { include: { model: Companies } });
+        let offer = await Offers.findByPk(req.params.offerID, { include: [{ model: Companies }, { model: Offers_Type}] });
 
-        //verificar se encontrou a oferta procurada
-        if (offer == null) {
-            res.status(404).json({
-                message: `Not found offer with id ${req.params.offerID}.`
-            });
-            return;
-        }
-
-        res.status(200).json(offer);
-    } catch (e) {
-        res.status(500).json({
-            message: e.message || `Error retrieving offer with id ${req.params.offerID}.`
+    //verificar se encontrou a oferta procurada
+    if (offer == null) {
+        res.status(404).json({
+            message: `Not found offer with id ${req.params.offerID}.`
         });
+        return;
     }
+
+    res.status(200).json(offer);
+} catch (e) {
+    res.status(500).json({
+        message: e.message || `Error retrieving offer with id ${req.params.offerID}.`
+    });
+}
 }
 
 // Criação de uma nova oferta
