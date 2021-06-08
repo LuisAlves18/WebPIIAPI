@@ -331,7 +331,7 @@ exports.deleteEvent = function _callee3(req, res) {
           event = _context3.sent;
 
           //verificar se eliminou algum evento
-          if (event == 1 && removeEnrollments > 0) {
+          if (event == 1) {
             res.status(200).json({
               message: "Event with id ".concat(req.params.eventID, " was successfully deleted!")
             });
@@ -532,7 +532,7 @@ exports.updateOneEvent = function _callee5(req, res) {
           return _context5.abrupt("return");
 
         case 25:
-          if (req.body.date_time_event) {
+          if (req.body.date) {
             _context5.next = 30;
             break;
           }
@@ -544,7 +544,7 @@ exports.updateOneEvent = function _callee5(req, res) {
 
         case 30:
           if (req.body.date_limit) {
-            _context5.next = 33;
+            _context5.next = 35;
             break;
           }
 
@@ -553,16 +553,27 @@ exports.updateOneEvent = function _callee5(req, res) {
           });
           return _context5.abrupt("return");
 
-        case 33:
-          _context5.prev = 33;
-          _context5.next = 36;
+        case 35:
+          if (req.body.time) {
+            _context5.next = 38;
+            break;
+          }
+
+          res.status(400).json({
+            message: "Event time can not be null!"
+          });
+          return _context5.abrupt("return");
+
+        case 38:
+          _context5.prev = 38;
+          _context5.next = 41;
           return regeneratorRuntime.awrap(Events.findByPk(req.params.eventID));
 
-        case 36:
+        case 41:
           event = _context5.sent;
 
           if (!(event == null)) {
-            _context5.next = 40;
+            _context5.next = 45;
             break;
           }
 
@@ -571,15 +582,15 @@ exports.updateOneEvent = function _callee5(req, res) {
           });
           return _context5.abrupt("return");
 
-        case 40:
-          _context5.next = 42;
+        case 45:
+          _context5.next = 47;
           return regeneratorRuntime.awrap(Events.update(req.body, {
             where: {
               id: req.params.eventID
             }
           }));
 
-        case 42:
+        case 47:
           updateEvent = _context5.sent;
 
           //verificar se o update foi bem sucedido
@@ -593,22 +604,22 @@ exports.updateOneEvent = function _callee5(req, res) {
             });
           }
 
-          _context5.next = 49;
+          _context5.next = 54;
           break;
 
-        case 46:
-          _context5.prev = 46;
-          _context5.t0 = _context5["catch"](33);
+        case 51:
+          _context5.prev = 51;
+          _context5.t0 = _context5["catch"](38);
           res.status(500).json({
             message: _context5.t0.message || "Error updating Event with id=".concat(req.params.eventID, ".")
           });
 
-        case 49:
+        case 54:
         case "end":
           return _context5.stop();
       }
     }
-  }, null, null, [[33, 46]]);
+  }, null, null, [[38, 51]]);
 }; // Obter todas as inscrições de um evento
 
 

@@ -208,7 +208,7 @@ exports.deleteEvent = async (req, res) => {
         
 
         //verificar se eliminou algum evento
-        if (event == 1 && removeEnrollments > 0) {
+        if (event == 1) {
             res.status(200).json({
                 message: `Event with id ${req.params.eventID} was successfully deleted!`
             });
@@ -283,24 +283,6 @@ exports.findOneEvent = async (req, res) => {
             message: e.message || `Error retrieving event with id ${req.params.eventID}.`
         });
     }
-
-
-
-    /*Events.findByPk(req.params.eventID)
-        .then(data => {
-            console.log('data',data)
-            if (data === null)
-                res.status(404).json({
-                    message: `Not found event with id ${req.params.eventID}.`
-                });
-            else
-                res.json(data);
-        })
-        .catch(err => {
-            res.status(500).json({
-                message: `Error retrieving event with id ${req.params.eventID}.`
-            });
-        });*/
 };
 
 // Update One Event
@@ -321,11 +303,14 @@ exports.updateOneEvent = async (req, res) => {
     } else if (!req.body.photo) {
         res.status(400).json({ message: "Event photo can not be empty!" });
         return;
-    } else if (!req.body.date_time_event) {
+    } else if (!req.body.date) {
         res.status(400).json({ message: "Event date can not be null!" });
         return;
     } else if (!req.body.date_limit) {
         res.status(400).json({ message: "Event date limit can not be null!" });
+        return;
+    } else if (!req.body.time) {
+        res.status(400).json({ message: "Event time can not be null!" });
         return;
     }
 
