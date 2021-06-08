@@ -14,7 +14,7 @@ router.use((req, res, next) => {
 })
 
 router.route('/')
-    .get(authController.verifyToken,authController.isAdmin,eventsTypeController.getAllEventsType)
+    .get(eventsTypeController.getAllEventsType)
 
 
 
