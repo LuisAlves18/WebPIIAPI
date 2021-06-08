@@ -202,7 +202,7 @@ exports.createEvent = function _callee2(req, res) {
           return _context2.abrupt("return");
 
         case 25:
-          if (req.body.date_time_event) {
+          if (req.body.date) {
             _context2.next = 30;
             break;
           }
@@ -214,7 +214,7 @@ exports.createEvent = function _callee2(req, res) {
 
         case 30:
           if (req.body.date_limit) {
-            _context2.next = 33;
+            _context2.next = 35;
             break;
           }
 
@@ -223,20 +223,31 @@ exports.createEvent = function _callee2(req, res) {
           });
           return _context2.abrupt("return");
 
-        case 33:
-          _context2.prev = 33;
-          _context2.next = 36;
+        case 35:
+          if (req.body.time) {
+            _context2.next = 38;
+            break;
+          }
+
+          res.status(400).json({
+            message: "Event time can not be null!"
+          });
+          return _context2.abrupt("return");
+
+        case 38:
+          _context2.prev = 38;
+          _context2.next = 41;
           return regeneratorRuntime.awrap(Events.findOne({
             where: {
               name: req.body.name
             }
           }));
 
-        case 36:
+        case 41:
           findEventByName = _context2.sent;
 
           if (!(findEventByName != null)) {
-            _context2.next = 40;
+            _context2.next = 45;
             break;
           }
 
@@ -245,22 +256,34 @@ exports.createEvent = function _callee2(req, res) {
           });
           return _context2.abrupt("return");
 
-        case 40:
-          _context2.next = 42;
-          return regeneratorRuntime.awrap(Events.create(req.body));
+        case 45:
+          _context2.next = 47;
+          return regeneratorRuntime.awrap(Events.create({
+            id_event_type: req.body.id_event_type,
+            name: req.body.name,
+            price: req.body.price,
+            description: req.body.description,
+            photo: req.body.photo,
+            date_time_event: req.body.date + " " + req.body.time,
+            date_limit: req.body.date_limit,
+            link: req.body.link,
+            address: req.body.address,
+            nrLimit: req.body.nrLimit,
+            closed: false
+          }));
 
-        case 42:
+        case 47:
           events = _context2.sent;
           res.status(201).json({
             message: "New event created.",
             location: "/events/" + events.id
           });
-          _context2.next = 49;
+          _context2.next = 54;
           break;
 
-        case 46:
-          _context2.prev = 46;
-          _context2.t0 = _context2["catch"](33);
+        case 51:
+          _context2.prev = 51;
+          _context2.t0 = _context2["catch"](38);
 
           if (_context2.t0.name === 'SequelizeValidationError') {
             res.status(400).json({
@@ -272,34 +295,43 @@ exports.createEvent = function _callee2(req, res) {
             });
           }
 
-        case 49:
+        case 54:
         case "end":
           return _context2.stop();
       }
     }
-  }, null, null, [[33, 46]]);
+  }, null, null, [[38, 51]]);
 }; // Remove one event
 
 
 exports.deleteEvent = function _callee3(req, res) {
-  var event;
+  var removeEnrollments, event;
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
           _context3.prev = 0;
           _context3.next = 3;
+          return regeneratorRuntime.awrap(Enrollments.destroy({
+            where: {
+              eventId: req.params.eventID
+            }
+          }));
+
+        case 3:
+          removeEnrollments = _context3.sent;
+          _context3.next = 6;
           return regeneratorRuntime.awrap(Events.destroy({
             where: {
               id: req.params.eventID
             }
           }));
 
-        case 3:
+        case 6:
           event = _context3.sent;
 
           //verificar se eliminou algum evento
-          if (event == 1) {
+          if (event == 1 && removeEnrollments > 0) {
             res.status(200).json({
               message: "Event with id ".concat(req.params.eventID, " was successfully deleted!")
             });
@@ -309,22 +341,22 @@ exports.deleteEvent = function _callee3(req, res) {
             });
           }
 
-          _context3.next = 10;
+          _context3.next = 13;
           break;
 
-        case 7:
-          _context3.prev = 7;
+        case 10:
+          _context3.prev = 10;
           _context3.t0 = _context3["catch"](0);
           res.status(500).json({
             message: _context3.t0.message || "Error deleting event with id=".concat(req.params.eventID, ".")
           });
 
-        case 10:
+        case 13:
         case "end":
           return _context3.stop();
       }
     }
-  }, null, null, [[0, 7]]);
+  }, null, null, [[0, 10]]);
 }; // List just one event
 
 
@@ -1015,7 +1047,7 @@ exports.cancelEnrollment = function _callee8(req, res) {
 
 
 exports.payEnrollment = function _callee9(req, res) {
-  var user, event, currentDate, limitEventDate, enrollment, payUserEnrollment, paidPrice, _updateUserPoints, _updateUserPoints2, addReceipt;
+  var user, event, currentDate, limitEventDate, enrollment, payUserEnrollment, paidPrice, _updateUserPoints, _updateUserPoints2;
 
   return regeneratorRuntime.async(function _callee9$(_context9) {
     while (1) {
@@ -1186,19 +1218,8 @@ exports.payEnrollment = function _callee9(req, res) {
           }
 
         case 54:
-          _context9.next = 56;
-          return regeneratorRuntime.awrap(Receipts.create({
-            price: paidPrice,
-            paid: true,
-            discount: req.body.discountPoints,
-            enrollmentId: enrollment.id
-          }));
-
-        case 56:
-          addReceipt = _context9.sent;
-
           if (!(payUserEnrollment != 1 && updateUserPoints != 1)) {
-            _context9.next = 62;
+            _context9.next = 59;
             break;
           }
 
@@ -1207,27 +1228,27 @@ exports.payEnrollment = function _callee9(req, res) {
           });
           return _context9.abrupt("return");
 
-        case 62:
+        case 59:
           res.status(200).json({
             message: "Payment to event ".concat(req.params.eventID, " completed successfully.")
           });
           return _context9.abrupt("return");
 
-        case 64:
-          _context9.next = 69;
+        case 61:
+          _context9.next = 66;
           break;
 
-        case 66:
-          _context9.prev = 66;
+        case 63:
+          _context9.prev = 63;
           _context9.t0 = _context9["catch"](0);
           res.status(500).json({
             message: _context9.t0.message || "Error paying enrollment to event with id ".concat(req.params.eventID, ".")
           });
 
-        case 69:
+        case 66:
         case "end":
           return _context9.stop();
       }
     }
-  }, null, null, [[0, 66]]);
+  }, null, null, [[0, 63]]);
 };

@@ -156,11 +156,14 @@ exports.createEvent = async (req, res) => {
     } else if (!req.body.photo) {
         res.status(400).json({ message: "Event photo can not be empty!" });
         return;
-    } else if (!req.body.date_time_event) {
+    } else if (!req.body.date) {
         res.status(400).json({ message: "Event date can not be null!" });
         return;
     } else if (!req.body.date_limit) {
         res.status(400).json({ message: "Event date limit can not be null!" });
+        return;
+    } else if (!req.body.time) {
+        res.status(400).json({ message: "Event time can not be null!" });
         return;
     }
 
@@ -180,7 +183,19 @@ exports.createEvent = async (req, res) => {
         }
 
         //no caso de nao existir, cria o novo evento
-        let events = await Events.create(req.body);
+        let events = await Events.create({
+            id_event_type: req.body.id_event_type,
+            name: req.body.name,
+            price: req.body.price,
+            description: req.body.description,
+            photo: req.body.photo,
+            date_time_event: req.body.date + " " + req.body.time,
+            date_limit: req.body.date_limit,
+            link: req.body.link,
+            address: req.body.address,
+            nrLimit: req.body.nrLimit,
+            closed: false
+        });
 
         res.status(201).json({
             message: "New event created.",
@@ -204,11 +219,16 @@ exports.createEvent = async (req, res) => {
 exports.deleteEvent = async (req, res) => {
 
     try {
+
+        
+        let removeEnrollments = await Enrollments.destroy({where: {eventId: req.params.eventID}});
         //remover um evento atraves do id passado como parametro
         let event = await Events.destroy({ where: { id: req.params.eventID } })
 
+        
+
         //verificar se eliminou algum evento
-        if (event == 1) {
+        if (event == 1 && removeEnrollments > 0) {
             res.status(200).json({
                 message: `Event with id ${req.params.eventID} was successfully deleted!`
             });
@@ -224,23 +244,6 @@ exports.deleteEvent = async (req, res) => {
         });
     }
 
-    /*Events.destroy({ where: { id: req.params.eventID } })
-        .then(num => {
-            if (num == 1) {
-                res.status(200).json({
-                    message: `Event with id ${req.params.eventID} was successfully deleted!`
-                });
-            } else {
-                res.status(404).json({
-                    message: `Not found event with id=${req.params.eventID}.`
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).json({
-                message: `Error deleting event with id=${req.params.eventID}.`
-            });
-        });*/
 };
 
 // List just one event
@@ -671,12 +674,12 @@ exports.payEnrollment = async (req, res) => {
         }
 
          
-        let addReceipt = await Receipts.create({
+       /*  let addReceipt = await Receipts.create({
             price: paidPrice,
             paid: true,
             discount: req.body.discountPoints,
             enrollmentId: enrollment.id
-        });
+        }); */
 
         if (payUserEnrollment != 1 && updateUserPoints != 1) {
             res.status(400).json({
