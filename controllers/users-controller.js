@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 
 const config = require('../config/auth-config.js');
 const db = require('../models/db.js');
+const { users } = require("../models/db.js");
 const User = db.users;
 const Events = db.events;
 const Enrollments = db.enrollments;
@@ -145,9 +146,11 @@ exports.getOneUser = async (req, res) => {
 
 exports.removeUser = async (req, res) => {
     try {
+
+        let removeEnrollments = await Enrollments.destroy({where: {userId: req.params.userID}});
         let removeUser = await User.destroy({ where: { id: req.params.userID } });
 
-        if (removeUser == 1) {
+        if (removeUser == 1 && removeEnrollments > 0 ) {
             res.status(200).json({
                 message: `User with id ${req.params.userID} was successfully deleted!`
             });
@@ -158,8 +161,6 @@ exports.removeUser = async (req, res) => {
             });
             return;
         }
-
-
 
     } catch (error) {
         res.status(500).json({ message: error.message });

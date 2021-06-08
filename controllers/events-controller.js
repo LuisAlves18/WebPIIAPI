@@ -2,7 +2,10 @@ const db = require("../models/db.js");
 const Events = db.events;
 const Users = db.users;
 const Enrollments = db.enrollments;
+const Receipts = db.receipts;
 const { Op } = require('sequelize');
+const areasModel = require("../models/areas-model.js");
+const { updateUser } = require("./users-controller.js");
 
 // Display list of all events
 exports.findAll = async (req, res) => {
@@ -195,20 +198,6 @@ exports.createEvent = async (req, res) => {
             });
         }
     }
-
-    // Save Event in the database
-    /*Events.create(req.body)
-        .then(data => {
-            res.status(201).json({ message: "New event created.", location: "/events/" + data.id });
-        })
-        .catch(err => {
-            if (err.name === 'SequelizeValidationError')
-                res.status(400).json({ message: err.errors[0].message });
-            else
-                res.status(500).json({
-                    message: err.message || "Some error occurred while creating the event."
-                });
-        });*/
 };
 
 // Remove one event
@@ -259,18 +248,53 @@ exports.findOneEvent = async (req, res) => {
     // obtains only a single entry from the table, using the provided primary key
 
     try {
-        //procurar um evento atraves do id enviado como parametro
-        let event = await Events.findByPk(req.params.eventID);
 
-        //verificar se encontrou o evento procurado
-        if (event == null) {
-            res.status(404).json({
-                message: `Not found event with id ${req.params.eventID}.`
+        //verificar se o login está feito
+        if (req.loggedUserId == null) {
+            //procurar um evento atraves do id enviado como parametro
+            let event = await Events.findByPk(req.params.eventID);
+
+            //verificar se encontrou o evento procurado
+            if (event == null) {
+                res.status(404).json({
+                    message: `Not found event with id ${req.params.eventID}.`
+                });
+                return;
+            }
+
+            res.status(200).json(event);
+        } else {
+            // procurar o user
+            let user = await Users.findByPk(req.loggedUserId);
+
+            if (user == null) {
+                res.status(404).json({
+                    message: `Not found user with id ${req.loggedUserId}.`
+                });
+                return;
+            }
+
+            //procurar o evento
+            let event = await Events.findByPk(req.params.eventID, {include: {model: Enrollments, where: {userId: user.id},include: {model:Users}}});
+
+            //verificar se encontrou o evento procurado
+            if (event == null) {
+                let event = await Events.findByPk(req.params.eventID);
+                res.status(200).json({ 
+                    message : 'logged',
+                    event
+                });
+                return;
+            }
+
+            res.status(200).json({ 
+                message : 'enrolled',
+                event
             });
-            return;
         }
 
-        res.status(200).json(event);
+
+
     } catch (e) {
         res.status(500).json({
             message: e.message || `Error retrieving event with id ${req.params.eventID}.`
@@ -439,16 +463,16 @@ exports.enrollUser = async (req, res) => {
                     let limitPersons = (event.nrLimit - 1);
 
                     if (limitPersons > 0) {
-                        let eventUpdate = {nrLimit : limitPersons}
-                        let updateEventLimitPersons = await Events.update(eventUpdate, {where: {id: req.params.eventID}});
+                        let eventUpdate = { nrLimit: limitPersons }
+                        let updateEventLimitPersons = await Events.update(eventUpdate, { where: { id: req.params.eventID } });
 
                         res.status(201).json({
                             message: `User with id ${req.loggedUserId} enrolled sucessfully to event with id ${req.params.eventID}`
                         });
                         return;
                     } else {
-                        let eventUpdate = {nrLimit : limitPersons, closed: true}
-                        let updateEventLimitPersons = await Events.update(eventUpdate, {where: {id: req.params.eventID}});
+                        let eventUpdate = { nrLimit: limitPersons, closed: true }
+                        let updateEventLimitPersons = await Events.update(eventUpdate, { where: { id: req.params.eventID } });
 
                         res.status(201).json({
                             message: `User with id ${req.loggedUserId} enrolled sucessfully to event with id ${req.params.eventID}`
@@ -533,10 +557,10 @@ exports.cancelEnrollment = async (req, res) => {
         let maxLotation = (event.nrLimit + 1);
 
         if (event.closed == true) {
-            let eventUpdateObject = { nrLimit : maxLotation, closed: false};
-            let updateEvent = await Events.update(eventUpdateObject, {where: {id: req.params.eventID}});
+            let eventUpdateObject = { nrLimit: maxLotation, closed: false };
+            let updateEvent = await Events.update(eventUpdateObject, { where: { id: req.params.eventID } });
 
-            let cancelEnroll = await Enrollments.destroy({where: {id: enrollment.id}});
+            let cancelEnroll = await Enrollments.destroy({ where: { id: enrollment.id } });
 
             if (cancelEnroll == 1) {
                 res.status(200).json({
@@ -545,10 +569,10 @@ exports.cancelEnrollment = async (req, res) => {
                 return;
             }
         } else {
-            let eventUpdateObject = { nrLimit : maxLotation};
-            let updateEvent = await Events.update(eventUpdateObject, {where: {id: req.params.eventID}});
+            let eventUpdateObject = { nrLimit: maxLotation };
+            let updateEvent = await Events.update(eventUpdateObject, { where: { id: req.params.eventID } });
 
-            let cancelEnroll = await Enrollments.destroy({where: {id: enrollment.id}});
+            let cancelEnroll = await Enrollments.destroy({ where: { id: enrollment.id } });
 
             if (cancelEnroll == 1) {
                 res.status(200).json({
@@ -566,7 +590,7 @@ exports.cancelEnrollment = async (req, res) => {
 
 // Pagar inscrição num evento
 exports.payEnrollment = async (req, res) => {
-    /* try {
+    try {
        
         let user = await Users.findByPk(req.loggedUserId);
 
@@ -586,13 +610,13 @@ exports.payEnrollment = async (req, res) => {
             return;
         }
 
-        //fazer a verificação da data limite de inscrição
+        //fazer a verificação da data limite de inscrição/pagamento
         const currentDate = new Date();
         let limitEventDate = new Date(event.date_limit);
 
         if (currentDate > limitEventDate) {
             res.status(400).json({
-                message: `Event ${req.params.eventID} already closed enrollments.`
+                message: `Event ${req.params.eventID} already closed payments.`
             });
             return;
         }
@@ -605,9 +629,73 @@ exports.payEnrollment = async (req, res) => {
             });
             return;
         }
+
+        if (enrollment.enrolled == true) {
+            res.status(400).json({
+                message: `User id ${req.loggedUserId} is already enrolled to event id ${req.params.eventID}.`
+            });
+            return;
+        }
+
+        if (!req.body) {
+            res.status(400).json({
+                message: `Request body can not be empty.`
+            });
+            return;
+        } else if (!req.body.discountPoints) {
+            res.status(400).json({
+                message: `Discount points can not be empty.`
+            });
+            return;
+        }
+
+        //fazer o pagamento
+        //retirar o nr de pontos que o user gastou
+        //colocar no recibo
+        let payUserEnrollment = await Enrollments.update({
+            enrolled: true
+        }, {where: {id: enrollment.id}});
+        let paidPrice = 0;
+        if (req.body.discountPoints <= 25 && req.body.discountPoints > 0) {
+            let updateUserPoints = await Users.update({
+                points: user.points - req.body.discountPoints
+            }, {where: {id: user.id}});
+            paidPrice = event.price * (req.body.discountPoints / 100);
+        } else if (req.body.discountPoints > 25){
+            let updateUserPoints = await Users.update({
+                points: user.points - 25
+            }, {where: {id: user.id}});
+            paidPrice = event.price * (25 / 100);
+        } else if (req.body.discountPoints == 0) {
+            paidPrice = event.price;
+        }
+
+         
+        let addReceipt = await Receipts.create({
+            price: paidPrice,
+            paid: true,
+            discount: req.body.discountPoints,
+            enrollmentId: enrollment.id
+        });
+
+        if (payUserEnrollment != 1 && updateUserPoints != 1) {
+            res.status(400).json({
+                message: `Could not complete the payment!`
+            });
+            return;
+        } else {
+            res.status(200).json({
+                message: `Payment to event ${req.params.eventID} completed successfully.`
+            });
+            return;
+        }
+
+
+
+
     } catch (error) {
         res.status(500).json({
-            message: error.message || `Error canceling enrollment to event with id ${req.params.eventID}.`
+            message: error.message || `Error paying enrollment to event with id ${req.params.eventID}.`
         });
-    } */
+    }
 }

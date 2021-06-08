@@ -25,7 +25,7 @@ router.route('/:eventID/enrollments')
 
 router.route('/:eventID([0-9]*$)')
     .delete(eventsController.deleteEvent)
-    .get(eventsController.findOneEvent)
+    .get(authController.verifyLoginUser, eventsController.findOneEvent)
     .put(eventsController.updateOneEvent)
 
 

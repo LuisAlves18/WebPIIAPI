@@ -36,6 +36,7 @@ db.courses = require('./courses-model.js')(sequelize, DataTypes);
 db.roles = require('./roles-model.js')(sequelize, DataTypes);
 db.status = require('./status-model.js')(sequelize, DataTypes);
 db.enrollments = require('./enrollments-model.js')(sequelize, DataTypes);
+db.receipts = require('./receipts-model.js')(sequelize, DataTypes);
 
 
 
@@ -76,6 +77,10 @@ db.enrollments.belongsTo(db.users);
 //relação entre events e enrollments
 db.events.hasMany(db.enrollments);
 db.enrollments.belongsTo(db.events);
+
+//relação entre enrollments e receipts
+db.enrollments.hasMany(db.receipts);
+db.receipts.belongsTo(db.enrollments);
 
 
 /* db.events_type.hasMany(db.events); 

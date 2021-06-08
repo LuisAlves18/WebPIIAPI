@@ -156,6 +156,24 @@ exports.verifyToken = (req, res, next) => {
 
 }
 
+exports.verifyLoginUser = (req,res,next) => {
+    let token = req.headers['x-access-token'];
+
+    if (!token) {
+        req.loggedUserId = null;
+        next();
+    } else {
+        jwt.verify(token, config.secret, (err, decoded)=>{
+            if (err) {
+                return res.status(401).send({message: "Unauthorized!"});
+            }
+
+            req.loggedUserId = decoded.id;
+            next();
+        })
+    }
+}
+
 exports.isAdmin = async (req, res, next) => {
     let user = await User.findByPk(req.loggedUserId);
     let role = await user.getRole();
