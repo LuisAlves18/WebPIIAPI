@@ -116,26 +116,6 @@ exports.findAll = async (req, res) => {
         });
     }
 
-
-
-    /*Events.findAll({ where: condition})
-        .then(data => {
-            //console.log('data', data.length)
-            if (data.length == 0) {
-                res.status(404).json({
-                    message: "Could not find events for that search!"
-                });
-            } else {
-                res.status(200).json(data);
-            }
-
-        })
-        .catch(err => {
-            res.status(500).json({
-                message:
-                    err.message || "Some error occurred while retrieving events."
-            });
-        });*/
 };
 
 // Handle event create on POST

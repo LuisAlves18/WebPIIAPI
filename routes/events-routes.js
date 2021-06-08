@@ -15,7 +15,7 @@ router.use((req, res, next) => {
 
 router.route('/')
     .get(eventsController.findAll)
-    .post(eventsController.createEvent)
+    .post(authController.verifyToken, authController.isAdmin,eventsController.createEvent)
 
 router.route('/:eventID/enrollments')
     .post(authController.verifyToken, authController.isLoggedUser, eventsController.enrollUser)
@@ -24,9 +24,9 @@ router.route('/:eventID/enrollments')
     .put(authController.verifyToken, authController.isLoggedUser, eventsController.payEnrollment)
 
 router.route('/:eventID([0-9]*$)')
-    .delete(eventsController.deleteEvent)
+    .delete(authController.verifyToken, authController.isAdmin,eventsController.deleteEvent)
     .get(authController.verifyLoginUser, eventsController.findOneEvent)
-    .put(eventsController.updateOneEvent)
+    .put(authController.verifyToken, authController.isAdmin,eventsController.updateOneEvent)
 
 
 
