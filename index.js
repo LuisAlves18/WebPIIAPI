@@ -17,6 +17,9 @@ app.use('/users', require('./routes/users-routes.js'));
 app.use('/auth', require('./routes/auth-routes.js'));
 app.use('/eventsType', require('./routes/events-type-routes.js'));
 app.use('/offersType', require('./routes/offers-type-routes.js'));
+app.use('/status', require('./routes/status-routes.js'));
+app.use('/areas', require('./routes/areas-routes.js'));
+app.use('/courses', require('./routes/courses-routes.js'));
 // handle invalid routes
 app.get('*', function(req, res) {
     res.status(404).json({ message: 'WHAT????' });

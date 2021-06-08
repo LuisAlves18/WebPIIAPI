@@ -89,7 +89,7 @@ exports.updateUser = async (req, res) => {
                 });
             }
             req.body.password = bcrypt.hashSync(req.body.password, 8);
-            //no caso de encontrar, atualiza o evento
+            //no caso de encontrar, atualiza o user
             let updateUser = await User.update(req.body, { where: { id: req.params.userID } });
 
             //verificar se o update foi bem sucedido
