@@ -15,6 +15,7 @@ app.use('/events', require('./routes/events-routes.js'));
 app.use('/offers', require('./routes/offers-routes.js'));
 app.use('/users', require('./routes/users-routes.js'));
 app.use('/auth', require('./routes/auth-routes.js'));
+app.use('/eventsType', require('./routes/events-type-routes.js'));
 // handle invalid routes
 app.get('*', function(req, res) {
     res.status(404).json({ message: 'WHAT????' });

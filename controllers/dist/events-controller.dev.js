@@ -584,7 +584,19 @@ exports.updateOneEvent = function _callee5(req, res) {
 
         case 45:
           _context5.next = 47;
-          return regeneratorRuntime.awrap(Events.update(req.body, {
+          return regeneratorRuntime.awrap(Events.update({
+            id_event_type: req.body.id_event_type,
+            name: req.body.name,
+            price: req.body.price,
+            description: req.body.description,
+            photo: req.body.photo,
+            date_time_event: req.body.date + " " + req.body.time,
+            date_limit: req.body.date_limit,
+            link: req.body.link,
+            address: req.body.address,
+            nrLimit: req.body.nrLimit,
+            closed: false
+          }, {
             where: {
               id: req.params.eventID
             }

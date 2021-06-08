@@ -327,7 +327,19 @@ exports.updateOneEvent = async (req, res) => {
         }
 
         //no caso de encontrar, atualiza o evento
-        let updateEvent = await Events.update(req.body, { where: { id: req.params.eventID } });
+        let updateEvent = await Events.update({
+            id_event_type: req.body.id_event_type,
+            name: req.body.name,
+            price: req.body.price,
+            description: req.body.description,
+            photo: req.body.photo,
+            date_time_event: req.body.date + " " + req.body.time,
+            date_limit: req.body.date_limit,
+            link: req.body.link,
+            address: req.body.address,
+            nrLimit: req.body.nrLimit,
+            closed: false
+        }, { where: { id: req.params.eventID } });
 
         //verificar se o update foi bem sucedido
         if (updateEvent == 1) {
