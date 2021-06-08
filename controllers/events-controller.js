@@ -629,6 +629,13 @@ exports.payEnrollment = async (req, res) => {
             return;
         }
 
+        if (req.body.discountPoints > user.points) {
+            res.status(400).json({
+                message: `You don't have that amount of points available.`
+            });
+            return;
+        }
+
         //fazer o pagamento
         //retirar o nr de pontos que o user gastou
         //colocar no recibo
@@ -676,6 +683,60 @@ exports.payEnrollment = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: error.message || `Error paying enrollment to event with id ${req.params.eventID}.`
+        });
+    }
+}
+
+exports.givePoints = async (req, res) => {
+    try {
+        //encontrar o evento
+        let event = await Events.findByPk(req.params.eventID);
+
+        if (event == null) {
+            res.status(404).json({
+                message: `Event with id ${req.params.eventID} not found`
+            });
+            return;
+        }
+
+        //encontrar todas as inscrições relacionadas com o evento em questão
+        let enrollments = await Enrollments.findAll({where: {eventId : req.params.eventID}});
+
+        if (enrollments == null) {
+            res.status(404).json({
+                message: `No enrollments found for event with id ${req.params.eventID}.`
+            });
+            return;
+        }
+        const currentDate = new Date();
+        let eventDate = new Date(event.date_time_event);
+        if (eventDate > currentDate) {
+            res.status(400).json({
+                message: `Event is not over yet.`
+            });
+            return;
+        }
+
+        for (const enrollment of enrollments) {
+            //encontrar o utilizador relacionado com a inscrição
+            let user = await Users.findByPk(enrollment.userId);
+            let newPoints = 0;
+            if (event.price == 0) {
+                newPoints = user.points + 2;
+            } else {
+                newPoints = user.points + 5
+            }
+            let updateUserPoints = await Users.update({
+                points: newPoints
+            }, {where: {id: user.id}});
+        }
+
+        res.status(200).json({
+            message: `Points given to all users.`
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
         });
     }
 }

@@ -1,13 +1,13 @@
 const db = require("../models/db.js");
 const Events = db.events;
-const EventsType = db.events_type;
+const OffersType = db.offers_type;
 const { Op } = require('sequelize');
 
 
-exports.getAllEventsType = async (req, res) => {
+exports.getAllOffersType = async (req, res) => {
     try {
-        let eventsType = await EventsType.findAll();
-        res.status(200).json(eventsType);
+        let offersType = await OffersType.findAll();
+        res.status(200).json(offersType);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

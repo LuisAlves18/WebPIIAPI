@@ -1,6 +1,6 @@
 const express = require('express');
 let router = express.Router();
-const eventsTypeController = require('../controllers/events-type-controller.js');
+const offersTypeController = require('../controllers/offers-type-controller.js');
 const authController = require('../controllers/auth-controller.js');
 
 // middleware for all routes related with offers
@@ -14,7 +14,7 @@ router.use((req, res, next) => {
 })
 
 router.route('/')
-    .get(eventsTypeController.getAllEventsType)
+    .get(authController.verifyToken,offersTypeController.getAllOffersType)
 
 
 

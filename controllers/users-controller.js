@@ -150,7 +150,7 @@ exports.removeUser = async (req, res) => {
         let removeEnrollments = await Enrollments.destroy({where: {userId: req.params.userID}});
         let removeUser = await User.destroy({ where: { id: req.params.userID } });
 
-        if (removeUser == 1 && removeEnrollments > 0 ) {
+        if (removeUser == 1 ) {
             res.status(200).json({
                 message: `User with id ${req.params.userID} was successfully deleted!`
             });
