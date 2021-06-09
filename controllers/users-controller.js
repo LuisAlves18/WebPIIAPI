@@ -107,7 +107,7 @@ exports.updateUser = async (req, res) => {
                 });
                 return;
             } else {
-                res.status(400).json({
+                res.status(200).json({
                     message: `No updates were made on User id=${req.params.userID}.`
                 });
                 return;
