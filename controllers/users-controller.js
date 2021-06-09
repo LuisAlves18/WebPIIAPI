@@ -82,7 +82,7 @@ exports.updateUser = async (req, res) => {
             }
             
 
-            if (req.body.passowrd != null) {
+            if (req.body.password != null) {
                 const passwordIsValid = bcrypt.compareSync(
                     req.body.password, user.password
                 );
@@ -105,10 +105,12 @@ exports.updateUser = async (req, res) => {
                 res.status(200).json({
                     message: `User id=${req.params.userID} was updated successfully.`
                 });
+                return;
             } else {
                 res.status(400).json({
                     message: `No updates were made on User id=${req.params.userID}.`
                 });
+                return;
             }
         }
     }
