@@ -632,7 +632,7 @@ exports.payEnrollment = async (req, res) => {
             return;
         }
 
-        if (req.body.discountPoints > user.points) {
+        if (req.body.discountPoints > user.points || req.body.discountPoints == 0 && user.points == 0) {
             res.status(400).json({
                 message: `You don't have that amount of points available.`
             });
