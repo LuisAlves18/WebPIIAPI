@@ -245,7 +245,10 @@ exports.findOneEvent = async (req, res) => {
                 return;
             }
 
-            res.status(200).json(event);
+            res.status(200).json({
+                message: 'none',
+                event
+            });
         } else {
             // procurar o user
             let user = await Users.findByPk(req.loggedUserId);
@@ -622,7 +625,7 @@ exports.payEnrollment = async (req, res) => {
                 message: `Request body can not be empty.`
             });
             return;
-        } else if (!req.body.discountPoints) {
+        } else if (req.body.discountPoints == null) {
             res.status(400).json({
                 message: `Discount points can not be empty.`
             });
@@ -665,7 +668,7 @@ exports.payEnrollment = async (req, res) => {
             enrollmentId: enrollment.id
         }); */
 
-        if (payUserEnrollment != 1 && updateUserPoints != 1) {
+        if (payUserEnrollment != 1 ) {
             res.status(400).json({
                 message: `Could not complete the payment!`
             });
