@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
+const { Op } = require("sequelize");
 const config = require('../config/auth-config.js');
 const db = require('../models/db.js');
 const { users } = require("../models/db.js");
@@ -11,7 +12,9 @@ const Role = db.roles;
 
 exports.getAllUsers = async (req, res) => {
     try {
-        let users = await User.findAll();
+        let users = await User.findAll({where: {
+            id : {[Op.ne] : req.loggedUserId}
+        }});
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ message: error.message });
