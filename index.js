@@ -20,6 +20,7 @@ app.use('/offersType', require('./routes/offers-type-routes.js'));
 app.use('/status', require('./routes/status-routes.js'));
 app.use('/areas', require('./routes/areas-routes.js'));
 app.use('/courses', require('./routes/courses-routes.js'));
+app.use('/companies', require('./routes/companies-routes.js'));
 // handle invalid routes
 app.get('*', function(req, res) {
     res.status(404).json({ message: 'WHAT????' });

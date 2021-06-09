@@ -729,7 +729,11 @@ exports.givePoints = async (req, res) => {
             let updateUserPoints = await Users.update({
                 points: newPoints
             }, {where: {id: user.id}});
+
+            let deleteEnrollment = await Enrollments.destroy({where: {id: enrollment.id}});
         }
+
+        
 
         res.status(200).json({
             message: `Points given to all users.`

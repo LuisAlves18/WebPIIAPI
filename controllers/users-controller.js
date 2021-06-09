@@ -40,7 +40,7 @@ exports.updateUser = async (req, res) => {
                 return;
             }
 
-            //no caso de encontrar, atualiza o evento
+            //no caso de encontrar, atualiza o user
             let updateUser = await User.update(req.body, { where: { id: req.params.userID } });
 
             //verificar se o update foi bem sucedido
@@ -74,21 +74,29 @@ exports.updateUser = async (req, res) => {
 
             let checkEmails = await User.findOne({ where: { email: req.body.email } })
 
-            if (checkEmails.id != req.params.userID) {
-                res.status(400).json({ message: "Sorry that email is already taken!" });
-                return;
+            if ( checkEmails != null) {
+                if (checkEmails.id != req.params.userID) {
+                    res.status(400).json({ message: "Sorry that email is already taken!" });
+                    return;
+                }
             }
+            
 
-            const passwordIsValid = bcrypt.compareSync(
-                req.body.password, user.password
-            );
-
-            if (passwordIsValid) {
-                return res.status(400).json({
-                    message: "New Password matches old password!"
-                });
+            if (req.body.passowrd != null) {
+                const passwordIsValid = bcrypt.compareSync(
+                    req.body.password, user.password
+                );
+    
+                if (passwordIsValid) {
+                    return res.status(400).json({
+                        message: "New Password matches old password!"
+                    });
+                }
+                req.body.password = bcrypt.hashSync(req.body.password, 8);
+            } else {
+                req.body.password = user.password;
             }
-            req.body.password = bcrypt.hashSync(req.body.password, 8);
+            
             //no caso de encontrar, atualiza o user
             let updateUser = await User.update(req.body, { where: { id: req.params.userID } });
 
@@ -122,6 +130,8 @@ exports.getOneUser = async (req, res) => {
                 return;
             }
 
+            user.password = null;
+
             return res.status(200).json(user);
 
         } else {
@@ -133,7 +143,7 @@ exports.getOneUser = async (req, res) => {
                 });
                 return;
             }
-
+            user.password = "";
             return res.status(200).json(user);
         }
 
