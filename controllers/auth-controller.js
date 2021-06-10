@@ -13,38 +13,38 @@ exports.signup = async (req, res) => {
         //let check duplicate email
         let user = await User.findOne({ where: { email: req.body.email } });
         if (user) {
-            return res.status(400).json({ message: "Failed! Email is already in use!" });
+            return res.status(400).json({ message: "Este email já existe!" });
         } else {
             user = await User.findOne({ where: { alumni_number: req.body.alumni_number } })
             if (user) {
-                return res.status(400).json({ message: "Failed! Alumni Number is already in use!" });
+                return res.status(400).json({ message: "O número de alumni já existe!" });
             }
         }
 
         //validate request body informations
         if (!req.body) {
-            res.status(400).json({ message: "Request body can not be empty!" });
+            res.status(400).json({ message: "Corpo do pedido não pode ser vazio!" });
             return;
         } else if (!req.body.first_name) {
-            res.status(400).json({ message: "User First Name can not be empty!" });
+            res.status(400).json({ message: "Primeiro nome não pode ser vazio!" });
             return;
         } else if (!req.body.last_name) {
-            res.status(400).json({ message: "User Last Name can not be empty!" });
+            res.status(400).json({ message: "Último nome não pode ser vazio!" });
             return;
         } else if (!req.body.email) {
-            res.status(400).json({ message: "User Email can not be empty!" });
+            res.status(400).json({ message: "Email não pode ser vazio!" });
             return;
         } else if (!req.body.alumni_number) {
-            res.status(400).json({ message: "Alumni number can not be empty!" });
+            res.status(400).json({ message: "Número de alumni não pode ser nulo!" });
             return;
         } else if (!req.body.password) {
-            res.status(400).json({ message: "Password can not be empty!" });
+            res.status(400).json({ message: "Password não pode ser vazia!" });
             return;
         }else if (!req.body.courseId) {
-            res.status(400).json({ message: "User Course can not be empty!" });
+            res.status(400).json({ message: "Curso frequentado pelo aluno não pode ser vazio!" });
             return;
         }else if (!req.body.areaId) {
-            res.status(400).json({ message: "User Interess Area can not be empty!" });
+            res.status(400).json({ message: "Área de interesse do aluno não pode ser vazia!" });
             return;
         }
 
@@ -68,7 +68,7 @@ exports.signup = async (req, res) => {
             courseId: req.body.courseId,
             areaId: req.body.areaId
         });
-        return res.json({ message: "User was registered successfully!" });
+        return res.json({ message: "Utilizador registado à espera de aprovação!" });
 
 
 
@@ -84,7 +84,7 @@ exports.signin = async (req, res) => {
         let user = await User.findOne({ where: { email: req.body.email } });
 
         if (!user) {
-            return res.status(404).json({ message: "User not found!" });
+            return res.status(404).json({ message: "Utilizador não encontrado!" });
         }
 
         const passwordIsValid = bcrypt.compareSync(
@@ -93,7 +93,7 @@ exports.signin = async (req, res) => {
 
         if (!passwordIsValid) {
             return res.status(401).json({
-                accessToken: null, message: "Invalid Password!"
+                accessToken: null, message: "Password inválida!"
             });
         }
 
@@ -101,26 +101,13 @@ exports.signin = async (req, res) => {
 
         if (status.description == 'blocked') {
             return res.status(401).json({
-                accessToken: null, message: "Oops, your account is blocked!"
+                accessToken: null, message: "A tua conta encontra-se bloqueada!"
             });
         } else if (status.description == 'pending') {
             return res.status(401).json({
-                accessToken: null, message: "Oops, your account was not acepted yet!"
+                accessToken: null, message: "A tua conta ainda não foi aceite!"
             });
         }
-
-        /* let status = await user.getStatus(Status)
-        console.log(status); */
-
-        /* if (user.statusId == 2) {
-            return res.status(401).json({
-                accessToken: null, message: "Oops, your account is blocked!"
-            });
-        } else if (user.statusId == 3) {
-            return res.status(401).json({
-                accessToken: null, message: "Oops, your account was not acepted yet!"
-            });
-        } */
 
         const token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 86400 }); //24h expira
 
@@ -140,13 +127,13 @@ exports.verifyToken = (req, res, next) => {
 
     if (!token) {
         return res.status(403).send({
-            message: "No token provided!"
+            message: "Nenhum token enviado!"
         });
     }
 
     jwt.verify(token, config.secret, (err, decoded) => {
         if (err) {
-            return res.status(401).send({ message: "Unauthorized!" });
+            return res.status(401).send({ message: "Sem autorização!" });
         }
         req.loggedUserId = decoded.id;
         console.log(decoded.id);
@@ -165,7 +152,7 @@ exports.verifyLoginUser = (req,res,next) => {
     } else {
         jwt.verify(token, config.secret, (err, decoded)=>{
             if (err) {
-                return res.status(401).send({message: "Unauthorized!"});
+                return res.status(401).send({message: "Sem autorização!"});
             }
 
             req.loggedUserId = decoded.id;
@@ -184,7 +171,7 @@ exports.verifyUserRole = (req, res, next) => {
     } else {
         jwt.verify(token, config.secret, (err, decoded)=>{
             if (err) {
-                return res.status(401).send({message: "Unauthorized!"});
+                return res.status(401).send({message: "Sem autorização!"});
             }
 
             req.loggedUserId = decoded.id;
@@ -199,7 +186,7 @@ exports.isAdmin = async (req, res, next) => {
     let role = await user.getRole();
     req.loggedUserRole = role.description;
     if (role.description != 'admin') {
-        return res.status(403).send({ message: "Require admin role!" })
+        return res.status(403).send({ message: "Necessário ser admin para executar esta ação!" })
 
     }
     next();
@@ -210,7 +197,7 @@ exports.isAdminOrLoggedUser = async (req, res, next) => {
     let role = await user.getRole();
     req.loggedUserRole = role.description;
     if (role.description != 'admin' && user.id != req.params.userID) {
-        return res.status(403).send({ message: "Require admin role" })
+        return res.status(403).send({ message: "Necessário ser admin para executar esta ação!" })
     }
     next();
 
@@ -222,7 +209,7 @@ exports.isLoggedUser = async (req, res, next) => {
     let role = await user.getRole();
     req.loggedUserRole = role.description;
     if (role.description == 'admin') {
-        return res.status(403).send({ message: "This is a user action!" })
+        return res.status(403).send({ message: "Necessário ser utilizador para executar esta ação!" })
     }
     next();
 

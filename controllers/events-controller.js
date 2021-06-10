@@ -106,7 +106,7 @@ exports.findAll = async (req, res) => {
         //verificar se retorna eventos
         if (events.length == 0) {
             res.status(404).json({
-                message: `Could not find any events.`
+                message: `Não foi possivel encontrar eventos.`
             });
             return;
         }
@@ -126,28 +126,28 @@ exports.findAll = async (req, res) => {
 exports.createEvent = async (req, res) => {
     // verificar se os seguintes dados existem no corpo do pedido
     if (!req.body) {
-        res.status(400).json({ message: "Request body can not be empty!" });
+        res.status(400).json({ message: "Corpo do pedido não pode ser vazio!" });
         return;
     } else if (!req.body.id_event_type) {
-        res.status(400).json({ message: "Event Type must be defined." });
+        res.status(400).json({ message: "Tipo de evento não pode ser nulo!" });
         return;
     } else if (!req.body.name) {
-        res.status(400).json({ message: "Event name can not be empty!" });
+        res.status(400).json({ message: "Nome do evento não pode ser vazio!" });
         return;
     } else if (!req.body.description) {
-        res.status(400).json({ message: "Event description can not be empty!" });
+        res.status(400).json({ message: "Descrição do evento não pode ser vazia!" });
         return;
     } else if (!req.body.photo) {
-        res.status(400).json({ message: "Event photo can not be empty!" });
+        res.status(400).json({ message: "Fotografia do evento não pode ser vazia!" });
         return;
     } else if (!req.body.date) {
-        res.status(400).json({ message: "Event date can not be null!" });
+        res.status(400).json({ message: "Data do evento não pode ser nula!" });
         return;
     } else if (!req.body.date_limit) {
-        res.status(400).json({ message: "Event date limit can not be null!" });
+        res.status(400).json({ message: "Data limite de inscrição no evento não pode ser nula!" });
         return;
     } else if (!req.body.time) {
-        res.status(400).json({ message: "Event time can not be null!" });
+        res.status(400).json({ message: "Hora do evento não pode ser nula!" });
         return;
     }
 
@@ -158,7 +158,7 @@ exports.createEvent = async (req, res) => {
         //no caso de existir nao deixa criar
         if (findEventByName != null) {
             res.status(400).json({
-                message: "Event " + req.body.name + " already exists!"
+                message: "Evento " + req.body.name + " já existe!"
             });
             return;
         }
@@ -179,7 +179,7 @@ exports.createEvent = async (req, res) => {
         });
 
         res.status(201).json({
-            message: "New event created.",
+            message: "Evento criado com sucesso.",
             location: "/events/" + events.id
         });
     } catch (e) {
@@ -211,11 +211,11 @@ exports.deleteEvent = async (req, res) => {
         //verificar se eliminou algum evento
         if (event == 1) {
             res.status(200).json({
-                message: `Event with id ${req.params.eventID} was successfully deleted!`
+                message: `Evento ${req.params.eventID} removido com sucesso!`
             });
         } else {
             res.status(404).json({
-                message: `Not found event with id=${req.params.eventID}.`
+                message: `Evento ${req.params.eventID} não existe.`
             });
         }
 
@@ -241,7 +241,7 @@ exports.findOneEvent = async (req, res) => {
             //verificar se encontrou o evento procurado
             if (event == null) {
                 res.status(404).json({
-                    message: `Not found event with id ${req.params.eventID}.`
+                    message: `Evento ${req.params.eventID} não existe.`
                 });
                 return;
             }
@@ -256,7 +256,7 @@ exports.findOneEvent = async (req, res) => {
 
             if (user == null) {
                 res.status(404).json({
-                    message: `Not found user with id ${req.loggedUserId}.`
+                    message: `Utilizador ${req.loggedUserId} não econtrado.`
                 });
                 return;
             }
@@ -293,28 +293,28 @@ exports.findOneEvent = async (req, res) => {
 exports.updateOneEvent = async (req, res) => {
     // verificar se os seguintes dados existem no corpo do pedido
     if (!req.body) {
-        res.status(400).json({ message: "Request body can not be empty!" });
+        res.status(400).json({ message: "Corpo do pedido não pode ser vazio!" });
         return;
     } else if (!req.body.id_event_type) {
-        res.status(400).json({ message: "Event Type must be defined." });
+        res.status(400).json({ message: "Tipo de evento não pode ser nulo!" });
         return;
     } else if (!req.body.name) {
-        res.status(400).json({ message: "Event name can not be empty!" });
+        res.status(400).json({ message: "Nome do evento não pode ser vazio!" });
         return;
     } else if (!req.body.description) {
-        res.status(400).json({ message: "Event description can not be empty!" });
+        res.status(400).json({ message: "Descrição do evento não pode ser vazia!" });
         return;
     } else if (!req.body.photo) {
-        res.status(400).json({ message: "Event photo can not be empty!" });
+        res.status(400).json({ message: "Fotografia do evento não pode ser vazia!" });
         return;
     } else if (!req.body.date) {
-        res.status(400).json({ message: "Event date can not be null!" });
+        res.status(400).json({ message: "Data do evento não pode ser nula!" });
         return;
     } else if (!req.body.date_limit) {
-        res.status(400).json({ message: "Event date limit can not be null!" });
+        res.status(400).json({ message: "Data limite de inscrição no evento não pode ser nula!" });
         return;
     } else if (!req.body.time) {
-        res.status(400).json({ message: "Event time can not be null!" });
+        res.status(400).json({ message: "Hora do evento não pode ser nula!" });
         return;
     }
 
@@ -325,7 +325,7 @@ exports.updateOneEvent = async (req, res) => {
         //verificar se encontrou o evento pretendido
         if (event == null) {
             res.status(404).json({
-                message: `Not found Event with id ${req.params.eventID}.`
+                message: `Evento ${req.params.eventID} não existe.`
             });
             return;
         }
@@ -348,11 +348,11 @@ exports.updateOneEvent = async (req, res) => {
         //verificar se o update foi bem sucedido
         if (updateEvent == 1) {
             res.status(200).json({
-                message: `Event id=${req.params.eventID} was updated successfully.`
+                message: `Evento ${req.params.eventID} alterado com sucesso.`
             });
         } else {
             res.status(400).json({
-                message: `No updates were made on Event id=${req.params.eventID}.`
+                message: `Não foi possivel efetuar alteração de dados no evento ${req.params.eventID}.`
             });
         }
     } catch (e) {
@@ -369,7 +369,7 @@ exports.getEventEnrollments = async (req, res) => {
 
         if (event == null) {
             res.status(404).json({
-                message: `Event id ${req.params.eventID} not found!`
+                message: `Evento ${req.params.eventID} não encontrado!`
             });
             return;
         }
@@ -378,7 +378,7 @@ exports.getEventEnrollments = async (req, res) => {
 
         if (eventEnrollments == null) {
             res.status(404).json({
-                message: `Event id ${req.params.eventID} doesn't have any enrollments!`
+                message: `Evento ${req.params.eventID} não contem inscrições!`
             });
             return;
         }
@@ -401,7 +401,7 @@ exports.enrollUser = async (req, res) => {
 
         if (user == null) {
             res.status(404).json({
-                message: 'User not found!'
+                message: 'Utilizador não existe!'
             });
             return;
         }
@@ -410,7 +410,7 @@ exports.enrollUser = async (req, res) => {
 
         if (event == null) {
             res.status(404).json({
-                message: 'Event not found!'
+                message: 'Evento não existe!'
             });
             return;
         }
@@ -421,7 +421,7 @@ exports.enrollUser = async (req, res) => {
 
         if (currentDate > limitEventDate) {
             res.status(400).json({
-                message: `Event ${req.params.eventID} already closed enrollments.`
+                message: `Evento ${req.params.eventID} fechou as inscrições.`
             });
             return;
         }
@@ -430,7 +430,7 @@ exports.enrollUser = async (req, res) => {
 
         if (enrollment != null) {
             res.status(400).json({
-                message: `User with id ${req.loggedUserId} already enrolled to event with id ${req.params.eventID}`
+                message: `Utilizador ${req.loggedUserId} já está inscrito no evento ${req.params.eventID}`
             });
             return;
         } else {
@@ -451,7 +451,7 @@ exports.enrollUser = async (req, res) => {
                         let updateEventLimitPersons = await Events.update(eventUpdate, { where: { id: req.params.eventID } });
 
                         res.status(201).json({
-                            message: `User with id ${req.loggedUserId} enrolled sucessfully to event with id ${req.params.eventID}`
+                            message: `Utilizador ${req.loggedUserId} inscrito com sucesso no evento ${req.params.eventID}`
                         });
                         return;
                     } else {
@@ -459,7 +459,7 @@ exports.enrollUser = async (req, res) => {
                         let updateEventLimitPersons = await Events.update(eventUpdate, { where: { id: req.params.eventID } });
 
                         res.status(201).json({
-                            message: `User with id ${req.loggedUserId} enrolled sucessfully to event with id ${req.params.eventID}`
+                            message: `Utilizador ${req.loggedUserId} inscrito com sucesso no evento ${req.params.eventID}`
                         });
                         return;
                     }
@@ -467,7 +467,7 @@ exports.enrollUser = async (req, res) => {
 
                 } else {
                     res.status(400).json({
-                        message: `Event with id ${req.params.eventID} reached is enrollments limit.`
+                        message: `Evento ${req.params.eventID} não contem mais lotação para inscrições.`
                     });
                     return;
                 }
@@ -481,7 +481,7 @@ exports.enrollUser = async (req, res) => {
                 });
 
                 res.status(201).json({
-                    message: `Waiting for payment for event with id ${req.params.eventID} to enroll user with id ${req.loggedUserId}`
+                    message: `Inscrição pendente! Evento ${req.params.eventID} necessita de pagamento.`
                 });
                 return;
             }
@@ -504,7 +504,7 @@ exports.cancelEnrollment = async (req, res) => {
 
         if (user == null) {
             res.status(404).json({
-                message: 'User not found!'
+                message: 'Utilizador não encontrado!'
             });
             return;
         }
@@ -513,7 +513,7 @@ exports.cancelEnrollment = async (req, res) => {
 
         if (event == null) {
             res.status(404).json({
-                message: 'Event not found!'
+                message: 'Evento não existe!'
             });
             return;
         }
@@ -524,7 +524,7 @@ exports.cancelEnrollment = async (req, res) => {
 
         if (currentDate > limitEventDate) {
             res.status(400).json({
-                message: `Event ${req.params.eventID} already closed enrollments.`
+                message: `Evento ${req.params.eventID} já fechou inscrições.`
             });
             return;
         }
@@ -533,7 +533,7 @@ exports.cancelEnrollment = async (req, res) => {
 
         if (enrollment == null) {
             res.status(404).json({
-                message: `User id ${req.loggedUserId} is not enrolled to event id ${req.params.eventID}.`
+                message: `Utilizador ${req.loggedUserId} não está inscrito no evento ${req.params.eventID}.`
             });
             return;
         }
@@ -548,7 +548,7 @@ exports.cancelEnrollment = async (req, res) => {
 
             if (cancelEnroll == 1) {
                 res.status(200).json({
-                    message: `Enrollment to event id ${req.params.eventID} canceled successfuly.`
+                    message: `Inscrição para o evento ${req.params.eventID} cancelada com sucesso.`
                 });
                 return;
             }
@@ -560,7 +560,7 @@ exports.cancelEnrollment = async (req, res) => {
 
             if (cancelEnroll == 1) {
                 res.status(200).json({
-                    message: `Enrollment to event id ${req.params.eventID} canceled successfuly.`
+                    message: `Inscrição para o evento ${req.params.eventID} cancelada com sucesso.`
                 });
                 return;
             }
@@ -580,7 +580,7 @@ exports.payEnrollment = async (req, res) => {
 
         if (user == null) {
             res.status(404).json({
-                message: 'User not found!'
+                message: 'Utilizador não existe!'
             });
             return;
         }
@@ -589,7 +589,7 @@ exports.payEnrollment = async (req, res) => {
 
         if (event == null) {
             res.status(404).json({
-                message: 'Event not found!'
+                message: 'Evento não existe!'
             });
             return;
         }
@@ -600,7 +600,7 @@ exports.payEnrollment = async (req, res) => {
 
         if (currentDate > limitEventDate) {
             res.status(400).json({
-                message: `Event ${req.params.eventID} already closed payments.`
+                message: `Evento ${req.params.eventID} já fechou pagamentos de inscrição.`
             });
             return;
         }
@@ -609,33 +609,33 @@ exports.payEnrollment = async (req, res) => {
 
         if (enrollment == null) {
             res.status(404).json({
-                message: `User id ${req.loggedUserId} is not enrolled to event id ${req.params.eventID}.`
+                message: `Utilizador ${req.loggedUserId} não está inscrito no evento ${req.params.eventID}.`
             });
             return;
         }
 
         if (enrollment.enrolled == true) {
             res.status(400).json({
-                message: `User id ${req.loggedUserId} is already enrolled to event id ${req.params.eventID}.`
+                message: `Utilizador ${req.loggedUserId} já está inscrito no evento ${req.params.eventID}.`
             });
             return;
         }
 
         if (!req.body) {
             res.status(400).json({
-                message: `Request body can not be empty.`
+                message: `Corpo do pedido não pode ser vazio.`
             });
             return;
         } else if (req.body.discountPoints == null) {
             res.status(400).json({
-                message: `Discount points can not be empty.`
+                message: `Pontos de desconto não podem ser nulos.`
             });
             return;
         }
 
         if (req.body.discountPoints > user.points) {
             res.status(400).json({
-                message: `You don't have that amount of points available.`
+                message: `Não tens esse montante de pontos disponiveis.`
             });
             return;
         }
@@ -661,22 +661,14 @@ exports.payEnrollment = async (req, res) => {
             paidPrice = event.price;
         }
 
-
-        /*  let addReceipt = await Receipts.create({
-             price: paidPrice,
-             paid: true,
-             discount: req.body.discountPoints,
-             enrollmentId: enrollment.id
-         }); */
-
         if (payUserEnrollment != 1) {
             res.status(400).json({
-                message: `Could not complete the payment!`
+                message: `Não foi possivel efetuar o pagamento`
             });
             return;
         } else {
             res.status(200).json({
-                message: `Payment to event ${req.params.eventID} completed successfully.`
+                message: `Pagamento para o evento ${req.params.eventID} feito com sucesso.`
             });
             return;
         }
@@ -698,7 +690,7 @@ exports.givePoints = async (req, res) => {
 
         if (event == null) {
             res.status(404).json({
-                message: `Event with id ${req.params.eventID} not found`
+                message: `Evento ${req.params.eventID} não existe.`
             });
             return;
         }
@@ -708,7 +700,7 @@ exports.givePoints = async (req, res) => {
 
         if (enrollments == null) {
             res.status(404).json({
-                message: `No enrollments found for event with id ${req.params.eventID}.`
+                message: `Não há inscrições para o evento ${req.params.eventID}.`
             });
             return;
         }
@@ -716,7 +708,7 @@ exports.givePoints = async (req, res) => {
         let eventDate = new Date(event.date_time_event);
         if (eventDate > currentDate) {
             res.status(400).json({
-                message: `Event is not over yet.`
+                message: `Evento ainda não foi terminado.`
             });
             return;
         }
@@ -741,7 +733,7 @@ exports.givePoints = async (req, res) => {
 
 
         res.status(200).json({
-            message: `Points given to all users.`
+            message: `Pontos atribuidos a todos os utilizadores inscritos.`
         });
     } catch (error) {
         return res.status(500).json({

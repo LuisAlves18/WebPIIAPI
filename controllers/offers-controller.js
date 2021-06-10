@@ -58,7 +58,7 @@ exports.findAll = async (req, res) => {
         //verificar se retorna ofertas
         if (offers.length == 0) {
             res.status(404).json({
-                message: `Could not find any offers.`
+                message: `Não existem ofertas disponiveis.`
             });
             return;
         }
@@ -82,7 +82,7 @@ exports.findOne = async (req, res) => {
     //verificar se encontrou a oferta procurada
     if (offer == null) {
         res.status(404).json({
-            message: `Not found offer with id ${req.params.offerID}.`
+            message: `Oferta ${req.params.offerID} não existe.`
         });
         return;
     }
@@ -99,25 +99,25 @@ exports.findOne = async (req, res) => {
 exports.createOffer = async (req, res) => {
     // verificar se os seguintes dados existem no corpo do pedido
     if (!req.body) {
-        res.status(400).json({ message: "Request body can not be empty!" });
+        res.status(400).json({ message: "Corpo do pedido não pode ser vazio!" });
         return;
     } else if (!req.body.companyId) {
-        res.status(400).json({ message: "Company id can not be null!" });
+        res.status(400).json({ message: "Empresa não pode ser nula!" });
         return;
     } else if (!req.body.areaId) {
-        res.status(400).json({ message: "Area id can not be null!" });
+        res.status(400).json({ message: "Area não pode ser nula!" });
         return;
     } else if (!req.body.typeOfferId) {
-        res.status(400).json({ message: "Offer Type id can not be null!" });
+        res.status(400).json({ message: "Tipo de oferta não pode ser nula!" });
         return;
     } else if (!req.body.description) {
-        res.status(400).json({ message: "Offer Description can not be empty!" });
+        res.status(400).json({ message: "Descrição da oferta não pode ser vazia!" });
         return;
     } else if (!req.body.emailContact) {
-        res.status(400).json({ message: "Company contact email can not be empty!" });
+        res.status(400).json({ message: "Email de contacto da empresa não pode ser vazio!" });
         return;
     } else if (!req.body.duration) {
-        res.status(400).json({ message: "Offer Duration can not be empty!" });
+        res.status(400).json({ message: "Duração da oferta não pode ser vazia!" });
         return;
     }
 
@@ -131,7 +131,7 @@ exports.createOffer = async (req, res) => {
         //no caso de existir nao deixa criar
         if (findExistingOffer != null) {
             res.status(400).json({
-                message: "Offer already exists!"
+                message: "Oferta já existe!"
             });
             return;
         }
@@ -140,7 +140,7 @@ exports.createOffer = async (req, res) => {
         let offer = await Offers.create(req.body);
 
         res.status(201).json({
-            message: "New offer created.",
+            message: "Oferta criada com sucesso.",
             location: "/offers/" + offer.id
         });
     } catch (e) {
@@ -162,25 +162,25 @@ exports.createOffer = async (req, res) => {
 exports.updateOne = async (req, res) => {
     // verificar se os seguintes dados existem no corpo do pedido
     if (!req.body) {
-        res.status(400).json({ message: "Request body can not be empty!" });
+        res.status(400).json({ message: "Corpo do pedido não pode ser vazio!" });
         return;
     } else if (!req.body.companyId) {
-        res.status(400).json({ message: "Company id can not be null!" });
+        res.status(400).json({ message: "Empresa não pode ser nula!" });
         return;
     } else if (!req.body.areaId) {
-        res.status(400).json({ message: "Area id can not be null!" });
+        res.status(400).json({ message: "Area não pode ser nula!" });
         return;
     } else if (!req.body.typeOfferId) {
-        res.status(400).json({ message: "Offer Type id can not be null!" });
+        res.status(400).json({ message: "Tipo de oferta não pode ser nula!" });
         return;
     } else if (!req.body.description) {
-        res.status(400).json({ message: "Offer Description can not be empty!" });
+        res.status(400).json({ message: "Descrição da oferta não pode ser vazia!" });
         return;
     } else if (!req.body.emailContact) {
-        res.status(400).json({ message: "Company contact email can not be empty!" });
+        res.status(400).json({ message: "Email de contacto da empresa não pode ser vazio!" });
         return;
     } else if (!req.body.duration) {
-        res.status(400).json({ message: "Offer Duration can not be empty!" });
+        res.status(400).json({ message: "Duração da oferta não pode ser vazia!" });
         return;
     }
 
@@ -191,7 +191,7 @@ exports.updateOne = async (req, res) => {
         //verificar se encontrou a oferta pretendida
         if (offer == null) {
             res.status(404).json({
-                message: `Not found Event with id ${req.params.offerID}.`
+                message: `Oferta ${req.params.offerID} não existe.`
             });
             return;
         }
@@ -202,11 +202,11 @@ exports.updateOne = async (req, res) => {
         //verificar se o update foi bem sucedido
         if (updateOffer == 1) {
             res.status(200).json({
-                message: `Offer id=${req.params.offerID} was updated successfully.`
+                message: `Oferta ${req.params.offerID} alterada com sucesso.`
             });
         } else {
             res.status(400).json({
-                message: `No updates were made on Offer id=${req.params.offerID}.`
+                message: `Não foi possivel realizar alterações para a oferta ${req.params.offerID}.`
             });
         }
     } catch (e) {
@@ -225,11 +225,11 @@ exports.deleteOne = async (req, res) => {
         //verificar se eliminou alguma oferta
         if (offer == 1) {
             res.status(200).json({
-                message: `Offer with id ${req.params.offerID} was successfully deleted!`
+                message: `Oferta ${req.params.offerID} removida com sucesso!`
             });
         } else {
             res.status(404).json({
-                message: `Not found offer with id=${req.params.offerID}.`
+                message: `Oferta ${req.params.offerID} não existe.`
             });
         }
 

@@ -8,7 +8,7 @@ exports.getCompanies = async (req, res) => {
 
         if (companies == null) {
             res.status(404).json({
-                message: `Could not find any companies.`
+                message: `Não foram encontradas empresas.`
             });
             return;
         }
@@ -27,42 +27,42 @@ exports.createCompany = async (req, res) => {
         //verificar se o conteudo necessario vem no body
         if (!req.body) {
             res.status(400).json({
-                message: `Request body can not be empty`
+                message: `Corpo do pedido não pode ser vazio!`
             });
             return;
         } else if (!req.body.name) {
             res.status(400).json({
-                message: `Company name can not be empty`
+                message: `Nome da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.email) {
             res.status(400).json({
-                message: `Company email can not be empty`
+                message: `Email da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.address) {
             res.status(400).json({
-                message: `Company address can not be empty`
+                message: `Morada da empresa não pode ser vazia!`
             });
             return;
         } else if (!req.body.website) {
             res.status(400).json({
-                message: `Company website can not be empty`
+                message: `Website da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.logo) {
             res.status(400).json({
-                message: `Company logo can not be empty`
+                message: `Logotipo da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.linkedIn) {
             res.status(400).json({
-                message: `Company linkedIn link can not be empty`
+                message: `Link do linkedIn da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.about) {
             res.status(400).json({
-                message: `Company about text can not be empty`
+                message: `Descrição sobre a empresa não pode ser vazia!`
             });
             return;
         }
@@ -72,7 +72,7 @@ exports.createCompany = async (req, res) => {
 
         if (company != null) {
             res.status(400).json({
-                message: `Company ${req.body.name} already exists!`
+                message: `Empresas ${req.body.name} já existe!`
             });
             return;
         }
@@ -81,7 +81,7 @@ exports.createCompany = async (req, res) => {
         let createCompany = await Companies.create(req.body);
 
         res.status(201).json({
-            message: "New company created.",
+            message: "Nova empresa adicionada.",
             location: "/companies/" + createCompany.id
         });
 
@@ -100,7 +100,7 @@ exports.getOneCompany = async (req, res) => {
 
         if (company == null) {
             res.status(404).json({
-                message: `Company with id ${req.params.companyID} not found.`
+                message: `Empresa ${req.params.companyID} não foi encontrada.`
             });
             return;
         }
@@ -122,12 +122,12 @@ exports.deleteCompany = async (req,res) => {
 
         if (removeCompany == 1) {
             res.status(200).json({
-                message: `Company successfuly deleted.`
+                message: `Empresa removida com sucesso.`
             });
             return;
         } else {
             res.status(404).json({
-                message: `Company with id ${req.params.companyID} not found.`
+                message: `Empresa ${req.params.companyID} não existe.`
             });
             return;
         }
@@ -145,59 +145,60 @@ exports.updateCompany = async (req, res) => {
 
         if (company == null) {
             res.status(404).json({
-                message: `Company with id ${req.params.companyID} not found.`
+                message: `Empresa ${req.params.companyID} não existe.`
             });
             return;
         }
 
-        //verificar se o conteudo necessario vem no body
-        if (!req.body) {
+         //verificar se o conteudo necessario vem no body
+         if (!req.body) {
             res.status(400).json({
-                message: `Request body can not be empty`
+                message: `Corpo do pedido não pode ser vazio!`
             });
             return;
         } else if (!req.body.name) {
             res.status(400).json({
-                message: `Company name can not be empty`
+                message: `Nome da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.email) {
             res.status(400).json({
-                message: `Company email can not be empty`
+                message: `Email da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.address) {
             res.status(400).json({
-                message: `Company address can not be empty`
+                message: `Morada da empresa não pode ser vazia!`
             });
             return;
         } else if (!req.body.website) {
             res.status(400).json({
-                message: `Company website can not be empty`
+                message: `Website da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.logo) {
             res.status(400).json({
-                message: `Company logo can not be empty`
+                message: `Logotipo da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.linkedIn) {
             res.status(400).json({
-                message: `Company linkedIn link can not be empty`
+                message: `Link do linkedIn da empresa não pode ser vazio!`
             });
             return;
         } else if (!req.body.about) {
             res.status(400).json({
-                message: `Company about text can not be empty`
+                message: `Descrição sobre a empresa não pode ser vazia!`
             });
             return;
         }
+
 
         let updateCompany = await Companies.update(req.body, {where: {id: req.params.companyID}});
 
         if (updateCompany == 1) {
             res.status(200).json({
-                message: `Company with id ${req.params.companyID} updated successfully.`
+                message: `Dados da empresa ${req.params.companyID} alterados com sucesso.`
             });
             return;
         }

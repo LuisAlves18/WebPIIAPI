@@ -27,10 +27,10 @@ exports.updateUser = async (req, res) => {
         console.log('role', req.loggedUserRole); */
         if (req.loggedUserRole == 'admin') {
             if (!req.body) {
-                res.status(400).json({ message: "Request body can not be empty!" });
+                res.status(400).json({ message: "Corpo do pedido não pode ser vazio!" });
                 return;
             } else if (!req.body.statusId) {
-                res.status(400).json({ message: "User status must be defined." });
+                res.status(400).json({ message: "Estado do utilizador não pode ser vazio." });
                 return;
             }
 
@@ -38,7 +38,7 @@ exports.updateUser = async (req, res) => {
 
             if (user == null) {
                 res.status(404).json({
-                    message: `Not found User with id ${req.params.userID}.`
+                    message: `Utilizador ${req.params.userID} não existe.`
                 });
                 return;
             }
@@ -49,20 +49,20 @@ exports.updateUser = async (req, res) => {
             //verificar se o update foi bem sucedido
             if (updateUser == 1) {
                 res.status(200).json({
-                    message: `User id=${req.params.userID} was updated successfully.`
+                    message: `Utilizador ${req.params.userID} alterado com sucesso.`
                 });
             } else {
                 res.status(400).json({
-                    message: `No updates were made on User id=${req.params.userID}.`
+                    message: `Não foi possivel realizar alterações para o utilizador${req.params.userID}.`
                 });
             }
         } else {
             //fazer a parte de um user editar o seu perfil
             if (!req.body) {
-                res.status(400).json({ message: "Request body can not be empty!" });
+                res.status(400).json({ message: "Corpo do pedido não pode ser vazio!" });
                 return;
             } else if (!req.body.email) {
-                res.status(400).json({ message: "User email can not be null." });
+                res.status(400).json({ message: "Email do utlizador não pode ser vazio." });
                 return;
             }
 
@@ -70,7 +70,7 @@ exports.updateUser = async (req, res) => {
 
             if (user == null) {
                 res.status(404).json({
-                    message: `Not found User with id ${req.params.userID}.`
+                    message: `Utilizador ${req.params.userID} não existe.`
                 });
                 return;
             }
@@ -79,7 +79,7 @@ exports.updateUser = async (req, res) => {
 
             if ( checkEmails != null) {
                 if (checkEmails.id != req.params.userID) {
-                    res.status(400).json({ message: "Sorry that email is already taken!" });
+                    res.status(400).json({ message: "O email que escolheu já existe!" });
                     return;
                 }
             }
@@ -92,7 +92,7 @@ exports.updateUser = async (req, res) => {
     
                 if (passwordIsValid) {
                     return res.status(400).json({
-                        message: "New Password matches old password!"
+                        message: "Nova password coincide com a antiga!"
                     });
                 }
                 req.body.password = bcrypt.hashSync(req.body.password, 8);
@@ -106,12 +106,12 @@ exports.updateUser = async (req, res) => {
             //verificar se o update foi bem sucedido
             if (updateUser == 1) {
                 res.status(200).json({
-                    message: `User id=${req.params.userID} was updated successfully.`
+                    message: `Utilizador ${req.params.userID} alterado com sucesso.`
                 });
                 return;
             } else {
                 res.status(200).json({
-                    message: `No updates were made on User id=${req.params.userID}.`
+                    message: `Não foi possivel realizar alterações para o user ${req.params.userID}.`
                 });
                 return;
             }
@@ -130,7 +130,7 @@ exports.getOneUser = async (req, res) => {
 
             if (user == null) {
                 res.status(404).json({
-                    message: `User with id = ${req.params.userID} not found.`
+                    message: `Utilizador ${req.params.userID} não existe.`
                 });
                 return;
             }
@@ -144,7 +144,7 @@ exports.getOneUser = async (req, res) => {
 
             if (user == null) {
                 res.status(404).json({
-                    message: `User with id = ${req.params.userID} not found.`
+                    message: `Utilizador ${req.params.userID} não existe.`
                 });
                 return;
             }
@@ -167,12 +167,12 @@ exports.removeUser = async (req, res) => {
 
         if (removeUser == 1 ) {
             res.status(200).json({
-                message: `User with id ${req.params.userID} was successfully deleted!`
+                message: `Utilizador ${req.params.userID} removido com sucesso!`
             });
             return;
         } else {
             res.status(404).json({
-                message: `User with id = ${req.params.userID} not found.`
+                message: `Utilizador ${req.params.userID} não existe.`
             });
             return;
         }
