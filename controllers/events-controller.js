@@ -62,36 +62,40 @@ exports.findAll = async (req, res) => {
         }
     }
 
-    //verificar se existe a key closed nos query params
-    if (closed) {
-        if (condition == null) {
-            if (closed == 'true') {
-                condition = {
-                    closed: true
+    console.log('role', req.loggedUserRole);
+    if (req.loggedUserRole == 'user') {
+        //verificar se existe a key closed nos query params
+        if (closed) {
+            if (condition == null) {
+                if (closed == 'true') {
+                    condition = {
+                        closed: true
+                    }
+                } else {
+                    condition = {
+                        closed: false
+                    }
                 }
+
             } else {
+                if (closed == 'true') {
+                    condition['closed'] = true;
+                } else {
+                    condition['closed'] = false;
+                }
+
+            }
+        } else {
+            if (condition == null) {
                 condition = {
                     closed: false
                 }
-            }
-
-        } else {
-            if (closed == 'true') {
-                condition['closed'] = true;
             } else {
                 condition['closed'] = false;
             }
-
-        }
-    } else {
-        if (condition == null) {
-            condition = {
-                closed: false
-            }
-        } else {
-            condition['closed'] = false;
         }
     }
+
 
 
 
@@ -147,9 +151,6 @@ exports.createEvent = async (req, res) => {
         return;
     }
 
-
-
-
     try {
         //procurar um evento com o nome definido no corpo do pedido
         let findEventByName = await Events.findOne({ where: { name: req.body.name } });
@@ -200,12 +201,12 @@ exports.deleteEvent = async (req, res) => {
 
     try {
 
-        
-        let removeEnrollments = await Enrollments.destroy({where: {eventId: req.params.eventID}});
+
+        let removeEnrollments = await Enrollments.destroy({ where: { eventId: req.params.eventID } });
         //remover um evento atraves do id passado como parametro
         let event = await Events.destroy({ where: { id: req.params.eventID } })
 
-        
+
 
         //verificar se eliminou algum evento
         if (event == 1) {
@@ -261,20 +262,20 @@ exports.findOneEvent = async (req, res) => {
             }
 
             //procurar o evento
-            let event = await Events.findByPk(req.params.eventID, {include: {model: Enrollments, where: {userId: user.id},include: {model:Users}}});
+            let event = await Events.findByPk(req.params.eventID, { include: { model: Enrollments, where: { userId: user.id }, include: { model: Users } } });
 
             //verificar se encontrou o evento procurado
             if (event == null) {
                 let event = await Events.findByPk(req.params.eventID);
-                res.status(200).json({ 
-                    message : 'logged',
+                res.status(200).json({
+                    message: 'logged',
                     event
                 });
                 return;
             }
 
-            res.status(200).json({ 
-                message : 'enrolled',
+            res.status(200).json({
+                message: 'enrolled',
                 event
             });
         }
@@ -574,7 +575,7 @@ exports.cancelEnrollment = async (req, res) => {
 // Pagar inscrição num evento
 exports.payEnrollment = async (req, res) => {
     try {
-       
+
         let user = await Users.findByPk(req.loggedUserId);
 
         if (user == null) {
@@ -632,7 +633,7 @@ exports.payEnrollment = async (req, res) => {
             return;
         }
 
-        if (req.body.discountPoints > user.points || req.body.discountPoints == 0 && user.points == 0) {
+        if (req.body.discountPoints > user.points) {
             res.status(400).json({
                 message: `You don't have that amount of points available.`
             });
@@ -644,31 +645,31 @@ exports.payEnrollment = async (req, res) => {
         //colocar no recibo
         let payUserEnrollment = await Enrollments.update({
             enrolled: true
-        }, {where: {id: enrollment.id}});
+        }, { where: { id: enrollment.id } });
         let paidPrice = 0;
         if (req.body.discountPoints <= 25 && req.body.discountPoints > 0) {
             let updateUserPoints = await Users.update({
                 points: user.points - req.body.discountPoints
-            }, {where: {id: user.id}});
+            }, { where: { id: user.id } });
             paidPrice = event.price * (req.body.discountPoints / 100);
-        } else if (req.body.discountPoints > 25){
+        } else if (req.body.discountPoints > 25) {
             let updateUserPoints = await Users.update({
                 points: user.points - 25
-            }, {where: {id: user.id}});
+            }, { where: { id: user.id } });
             paidPrice = event.price * (25 / 100);
         } else if (req.body.discountPoints == 0) {
             paidPrice = event.price;
         }
 
-         
-       /*  let addReceipt = await Receipts.create({
-            price: paidPrice,
-            paid: true,
-            discount: req.body.discountPoints,
-            enrollmentId: enrollment.id
-        }); */
 
-        if (payUserEnrollment != 1 ) {
+        /*  let addReceipt = await Receipts.create({
+             price: paidPrice,
+             paid: true,
+             discount: req.body.discountPoints,
+             enrollmentId: enrollment.id
+         }); */
+
+        if (payUserEnrollment != 1) {
             res.status(400).json({
                 message: `Could not complete the payment!`
             });
@@ -703,7 +704,7 @@ exports.givePoints = async (req, res) => {
         }
 
         //encontrar todas as inscrições relacionadas com o evento em questão
-        let enrollments = await Enrollments.findAll({where: {eventId : req.params.eventID}});
+        let enrollments = await Enrollments.findAll({ where: { eventId: req.params.eventID } });
 
         if (enrollments == null) {
             res.status(404).json({
@@ -731,12 +732,13 @@ exports.givePoints = async (req, res) => {
             }
             let updateUserPoints = await Users.update({
                 points: newPoints
-            }, {where: {id: user.id}});
+            }, { where: { id: user.id } });
 
-            let deleteEnrollment = await Enrollments.destroy({where: {id: enrollment.id}});
+            let deleteEnrollment = await Enrollments.destroy({ where: { id: enrollment.id } });
+            
         }
+        let deleteEvent = await Events.destroy({ where: { id: req.params.eventID } });
 
-        
 
         res.status(200).json({
             message: `Points given to all users.`

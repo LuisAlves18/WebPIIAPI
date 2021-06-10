@@ -127,7 +127,7 @@ exports.signin = async (req, res) => {
         let role = await Roles.findByPk(user.roleId)
 
         return res.status(200).json({
-            id: user.id, email: user.email, role: role.description, accessToken: token
+            id: user.id, first_name: user.first_name, last_name: user.last_name, email: user.email, role: role.description, accessToken: token
         });
     }
     catch (err) {
@@ -174,6 +174,26 @@ exports.verifyLoginUser = (req,res,next) => {
     }
 }
 
+exports.verifyUserRole = (req, res, next) => {
+    let token = req.headers['x-access-token'];
+
+    if (!token) {
+        req.loggedUserRole = 'user';
+        req.loggedUserId = null;
+        next();
+    } else {
+        jwt.verify(token, config.secret, (err, decoded)=>{
+            if (err) {
+                return res.status(401).send({message: "Unauthorized!"});
+            }
+
+            req.loggedUserId = decoded.id;
+            next();
+            
+        })
+    }
+}
+
 exports.isAdmin = async (req, res, next) => {
     let user = await User.findByPk(req.loggedUserId);
     let role = await user.getRole();
@@ -207,4 +227,17 @@ exports.isLoggedUser = async (req, res, next) => {
     next();
 
 
+}
+
+exports.checkIsUserOrAdmin = async (req, res, next) => {
+    if (req.loggedUserId != null) {
+        let user = await User.findByPk(req.loggedUserId);
+        if (user.roleId == 1) {
+            req.loggedUserRole = 'admin';
+            next();
+        } else {
+            req.loggedUserRole = 'user';
+            next();
+        }
+    }
 }

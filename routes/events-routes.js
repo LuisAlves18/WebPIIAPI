@@ -14,7 +14,7 @@ router.use((req, res, next) => {
 })
 
 router.route('/')
-    .get(eventsController.findAll)
+    .get(authController.verifyUserRole, authController.checkIsUserOrAdmin,eventsController.findAll)
     .post(authController.verifyToken, authController.isAdmin, eventsController.createEvent)
 
 router.route('/:eventID/enrollments')
