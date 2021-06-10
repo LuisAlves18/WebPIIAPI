@@ -267,6 +267,12 @@ exports.findOneEvent = async (req, res) => {
             //verificar se encontrou o evento procurado
             if (event == null) {
                 let event = await Events.findByPk(req.params.eventID);
+                if (event == null) {
+                    res.status(404).json({
+                        message: `Evento ${req.params.eventID} não existe.`
+                    })
+                    return;
+                }
                 res.status(200).json({
                     message: 'logged',
                     event
