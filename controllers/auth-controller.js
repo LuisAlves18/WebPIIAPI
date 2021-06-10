@@ -109,7 +109,7 @@ exports.signin = async (req, res) => {
             });
         }
 
-        const token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 86400 }); //24h expira
+        const token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 1728000 }); //expira em 20 dias
 
         let role = await Roles.findByPk(user.roleId)
 
